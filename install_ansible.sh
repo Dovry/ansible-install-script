@@ -74,6 +74,7 @@ else
 fi
 
 printf "\nSetting Ansible permissions\n"
+chmod -R 774 $LOC
 chown -R root:ansible $LOC
 chmod g+s $LOC
 
