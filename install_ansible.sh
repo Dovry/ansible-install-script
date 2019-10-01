@@ -5,7 +5,7 @@ set -u # exit if a referenced variable is not declared
 red=`tput setaf 1`
 green=`tput setaf 2`
 reset=`tput sgr0`
-# echo "${red}red text ${green}green text${reset}"
+
 PACKAGES="software-properties-common python-pip curl python-dev libkrb5-dev gcc"
 LOC="/etc/ansible"
 FOLDERS="facts files inventory playbooks plugins roles inventory/group_vars inventory/host_vars"
@@ -13,8 +13,8 @@ FILES="inventory/hosts hosts ansible.cfg"
 # Set this to the URL of your custom ansible.cfg file
 CFG="https://raw.githubusercontent.com/ansible/ansible/devel/examples/ansible.cfg"
 
-# use != and remove 'NOT' if it must be run as root
-if [ "$(whoami)" != 'root' ]; then
+if [ "$(whoami)" != 'root' ]; 
+then
   printf "${green}~~~\n${red}This script must be run as root\n${green}~~~${reset}\n"
   exit 1
 fi
@@ -23,10 +23,11 @@ printf "\n~~ Ansible Install Script ~~\n"
 sleep 1
 printf "\nPreparing system\n"
 sleep 1
+
 printf "\nUpdating apt cache\n"
 apt-get update > /dev/null 2>&1
 
-printf "\nInstalling required packages\n\nThis may take a while\n"
+printf "\nInstalling required packages. This may take a while\n"
 apt-get install -y $PACKAGES  > /dev/null 2>&1
 
 printf "\nRemoving any old Ansible PPAs\n"
@@ -75,3 +76,5 @@ fi
 printf "\nSetting Ansible permissions\n"
 chown -R root:ansible $LOC
 chmod g+s $LOC
+
+printf "\n\nDone\nYou can now start using Ansible, enjoy.\n"
