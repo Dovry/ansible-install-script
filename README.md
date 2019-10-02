@@ -18,7 +18,9 @@ USERS=""
 ### Step by step walkthrough
 
 1. Installs required packages, includes:
-    * python-pip, curl and other dependencies
+    * python-pip
+    * curl
+    * misc. other dependencies
 1. Removes old Ansible PPAs if there are any
 1. Re-adds the latest Ansible PPA
 1. Installs Ansible
