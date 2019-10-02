@@ -2,6 +2,14 @@
 
 ## Install Ansible on Ubuntu with a shell script
 
+## How to use this script
+
+```shell
+git clone git@git.evry.cloud:cloudascore-ansible-roles/ansible_sh.git
+cd ansible_sh
+sh install_ansible.sh
+```
+
 **Optional** variables:
 
 ```sh
