@@ -20,6 +20,8 @@ red=`tput setaf 1`
 green=`tput setaf 2`
 reset=`tput sgr0`
 
+
+STARTTIME=$(date +%s)
 PACKAGES="software-properties-common python-pip curl sshpass python-dev libkrb5-dev gcc"
 PYPKGS="pywinrm pykerberos py pygssapi requests-kerberos"
 LOC="/etc/ansible"
@@ -130,7 +132,8 @@ chmod -R 774 $LOC
 chown -R root:ansible $LOC
 chmod g+s $LOC
 
-printf "\nDone! "
+ENDTIME=$(date +%s)
+printf "\nFinished in $((ENDTIME-STARTTIME)) seconds.\n\n"
 
 if [ -z "$GALAXY" ] || [ -z "$GIT"]
 then
