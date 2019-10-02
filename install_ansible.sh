@@ -34,7 +34,7 @@ then
   exit 1
 fi
 
-printf "\n~~ Ansible Install Script ~~\n"
+printf "\n~~ Ansible Installation Script ~~\n"
 sleep 1
 printf "\nPreparing system\n"
 sleep 1
