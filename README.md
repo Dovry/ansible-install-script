@@ -7,6 +7,7 @@
 ```shell
 git clone git@git.evry.cloud:cloudascore-ansible-roles/ansible_sh.git
 cd ansible_sh
+chmod +x ansible_install.sh
 sh install_ansible.sh
 ```
 
