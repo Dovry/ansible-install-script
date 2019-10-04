@@ -1,6 +1,14 @@
-# ansible_sh
+# Ansible convenience script
 
-## Install Ansible on Ubuntu with a shell script
+## Install Ansible with a shell script
+
+### Currently supports:
+
+* Ubuntu 18.04
+* Ubuntu 16.04
+
+* Centos 8
+* Centos 7
 
 ## How to use this script
 
