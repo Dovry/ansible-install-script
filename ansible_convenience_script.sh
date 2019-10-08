@@ -2,6 +2,8 @@
 # POSIX
 set -e # exit if a command fails
 set -u # exit if a referenced variable is not declared
+STARTTIME=$(date +%s) # start function for script runtime
+
 
 # Set this to the URL of your custom ansible.cfg file, e.g.
 # CFG="https://raw.githubusercontent.com/ansible/ansible/devel/examples/ansible.cfg"
@@ -16,7 +18,6 @@ GALAXY=""
 # USERS="alice bob charlie diane"
 USERS=""
 
-STARTTIME=$(date +%s)
 # system agnostic packages
 PKGS="gcc curl sshpass" 
 # yum agnostic packages
@@ -33,6 +34,11 @@ LOC="/etc/ansible"
 ANSI_FOLDERS="facts files inventory playbooks plugins roles inventory/group_vars inventory/host_vars"
 FILES="/etc/ansible/inventory/hosts /etc/ansible/hosts /etc/ansible/ansible.cfg"
 
+# Check for distribution
+OS="$(sed -n '/^ID=/p' /etc/*release | sed 's/ID=//g;s/"//g')"
+# Check for distribution version
+VER="$(sed -n '/VERSION_ID=/p' /etc/*release | sed 's/VERSION_ID=//g;s/"//g')"
+
 # Exit if not run as root
 if [ "$(whoami)" != 'root' ]; 
   then
@@ -41,71 +47,67 @@ if [ "$(whoami)" != 'root' ];
 fi
 
 # Check which OS script is being run on. Exits if it's not supported
-if [ "$(cat /etc/*release | grep -P "^ID=(\w+|\"\w+\")" | sed 's/"//g' | sed 's/ID=//g')" = "ubuntu" ];
-  then
-    OS="ubuntu"
-    if [ "$(cat /etc/*release | grep -P "^VERSION_ID=" | sed 's/VERSION_ID=//g' | sed 's/"//g')" = "18.04" ]; 
-      then
-        VER="18.04"
-      elif [ "$(cat /etc/*release | grep -P "^VERSION_ID=" | sed 's/VERSION_ID=//g' | sed 's/"//g')" = "16.04" ]; 
-        then
-          VER="16.04"
-      else
-        printf "\nOS not supported\n"
-        exit 1
-    fi
-    printf "\nUbuntu %s " "$VER"
-    printf "detected, configuring...\n"
-    sleep 2
-  elif [ "$(cat /etc/*release | grep -P "^ID=(\w+|\"\w+\")" | sed 's/"//g' | sed 's/ID=//g')" = "centos" ];
-  then
-    OS="centos"
-    if [ "$(cat /etc/*release | grep -P "^VERSION_ID=" | sed 's/VERSION_ID=//g' | sed 's/"//g')" = "8" ];
-      then
-        VER="8"
-      elif [ "$(cat /etc/*release | grep -P "^VERSION_ID=" | sed 's/VERSION_ID=//g' | sed 's/"//g')" = "7" ];
-        then
-          VER="7"
-      else
-        printf "\nOS not supported\n"
-        exit 1
-    fi
-    printf "\nCentOS %s " "$VER"
-    printf "detected, configuring...\n"
-    sleep 2
-  else
-    printf "OS not supported\n"
-    exit 1
-fi
+while :; do
+  case "$OS" in
+    ubuntu|centos)
+      while :; do
+        case "$VER" in
+          18.*|16.*|8|7)
+          printf "\n%s %s detected, configuring...\n" "$OS" "$VER"
+          break
+          ;;
+        esac
+      done
+    break
+    ;;
+    *)
+      printf "\n%s %s is not supported\n" "$OS" "$VER"
+      exit 0
+    ;;
+  esac
+done
 
 # Update cache // install epel-release
-printf "\n~~~ Ansible Installation script for %s " "$OS $VER"
-printf "~~~\n"
-if [ "$OS" = "ubuntu" ]; then
-  sleep 1
-  printf "\nPreparing system\n"
-  sleep 1
-  printf "\nUpdating apt cache\n"
-  apt-get update > /dev/null 2>&1
-  elif [ "$OS" = "centos" ]; then
-    sleep 1
-    printf "\nPreparing system\n"
-    sleep 1
-    printf "\nInstalling epel-release\n"
-    yum install -y epel-release > /dev/null 2>&1
-fi
+while :; do
+  case "$OS" in
+    ubuntu)
+      printf "\nupdating apt cache\n"
+      apt-get update > /dev/null 2>&1
+      break
+    ;;
+    centos)
+      printf "\nInstalling epel-release\n"
+      yum install -y epel-release > /dev/null 2>&1
+      break
+    ;;
+  esac
+done
 
 # Install requirements with package manager
 printf "\nInstalling required packages. This may take a while\n"
-if [ "$OS" = "ubuntu" ]; then
-  apt-get install -y $APT > /dev/null 2>&1
-  elif [ "$OS" = "centos" ]; then
-    if [ "$VER" = "8" ]; then
-      dnf install -y $YUM $DNF $PKGS > /dev/null 2>&1    
-    elif [ "$VER" = "7" ]; then
-      yum install -y $YUM $PKGS > /dev/null 2>&1
-    fi
-fi
+while :; do
+  case "$OS" in
+    ubuntu)
+      apt-get install -y $APT > /dev/null 2>&1
+      break
+    ;;
+    centos)
+      while :; do
+        case "$VER" in
+          8)
+            dnf install -y $YUM $DNF $PKGS > /dev/null 2>&1
+            break
+          ;;
+          7)
+            yum install -y $YUM $PKGS > /dev/null 2>&1
+            break
+          ;;
+        esac
+      done
+    break
+    ;;
+  esac
+done
 
 # Add & remove PPA + update cache
 if [ "$OS" = "ubuntu" ]; then
@@ -133,15 +135,29 @@ fi
 
 # Install python pip packages
 printf "\nInstalling python modules. This may take a while\n"
-if [ "$OS" = "ubuntu" ]; then
-    pip install --upgrade $PYPKGS $UBU_PYPKGS > /dev/null 2>&1
-  elif [ "$OS" = "centos" ]; then
-    if [ "$VER" = "8" ]; then
-      pip2 install --upgrade $PYPKGS $CENT_PYPKGS > /dev/null 2>&1
-    elif [ "$VER" = "7" ]; then
-      pip install --upgrade $PYPKGS $CENT_PYPKGS > /dev/null 2>&1
-    fi
-fi
+while :; do
+  case "$OS" in
+    ubuntu)
+      pip install --upgrade $PYPKGS $UBU_PYPKGS > /dev/null 2>&1
+      break
+    ;;
+    centos)
+      while :; do
+        case "$VER" in
+          8)
+            pip2 install --upgrade $PYPKGS $CENT_PYPKGS > /dev/null 2>&1
+            break
+          ;;
+          7)
+            pip install --upgrade $PYPKGS $CENT_PYPKGS > /dev/null 2>&1
+            break
+          ;;
+        esac
+      done
+    break
+    ;;
+  esac
+done
 
 # Create missing directories
 printf "\nCreate any missing directories\n"
@@ -165,9 +181,7 @@ if [ -z "$CFG" ]
     printf "\nBacking up current ansible.cfg\n"
     BACKUP=$(date '+%Y_%m_%d_%H_%M_%S')
     cp "$LOC"/ansible.cfg "$LOC"/ansible.cfg_"$BACKUP".bak
-    sleep 1
     printf "\nFetching specified ansible.cfg\n"
-    sleep 1
     curl "$CFG" -o "$LOC"/ansible.cfg > /dev/null 2>&1
 fi
 
@@ -175,7 +189,6 @@ fi
 if [ -z "$GALAXY" ];
   then
     printf "\nNo galaxy roles set, skipping...\n"
-    sleep 1
   else
     printf "\nFetching galaxy roles\n"
     ansible-galaxy --roles-path "$LOC"/roles install "$GALAXY" > /dev/null 2>&1
@@ -183,24 +196,26 @@ fi
 
 # Download Ansible roles from git if specified
 if [ -z "$GIT" ]; then
-    printf "\nNo git roles set, skipping...\n"
-    sleep 1
-  elif [ "$OS" = "ubuntu" ]; then
-    for ROLE in $GIT;
-      do
-        printf "\nInstalling git\n"
-        apt install -y git > /dev/null 2>&1
-        printf "\nFetching roles from git\n"
-        git clone "$ROLE" "$LOC"/roles > /dev/null 2>&1
-      done
-  elif [ "$OS" = "centos" ]; then
-    for ROLE in $GIT;
-      do
-        printf "\nInstalling git\n"
-        yum install -y git > /dev/null 2>&1
-        printf "\nFetching roles from git\n"
-        git clone "$ROLE" "$LOC"/roles > /dev/null 2>&1
-      done
+   printf "\nNo git roles set, skipping\n"
+   else
+    while :; do
+      case "$OS" in
+        ubuntu)
+          printf "\nInstalling git\n"
+          apt install -y git > /dev/null 2>&1
+          printf "\nFetching roles from git\n"
+          git clone "$ROLE" "$LOC"/roles > /dev/null 2>&1
+        break
+        ;;
+        centos)
+          printf "\nInstalling git\n"
+          yum install -y git > /dev/null 2>&1
+          printf "\nFetching roles from git\n"
+          git clone "$ROLE" "$LOC"/roles > /dev/null 2>&1
+        break
+        ;;
+      esac
+    done
 fi
 
 # Make sure group 'ansible' exists
@@ -232,8 +247,7 @@ chmod -R 774 "$LOC"
 chown -R root:ansible "$LOC"
 chmod g+s "$LOC"
 
-# Print run time in seconds
-ENDTIME=$(date +%s)
+ENDTIME=$(date +%s) # end function for script runtime
 printf "\nFinished in %s" "$((ENDTIME-STARTTIME))" 
 printf " seconds.\n\n"
 
