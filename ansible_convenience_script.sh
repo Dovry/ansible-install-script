@@ -19,11 +19,11 @@ GALAXY=""
 USERS=""
 
 # system agnostic packages
-PKGS="gcc curl sshpass" 
+PKGS="gcc curl sshpass"
 # yum agnostic packages
-YUM="python2-pip kernel-devel gcc-c++ libxslt-devel libffi-devel openssl-devel" 
+YUM="python2-pip kernel-devel gcc-c++ libxslt-devel libffi-devel openssl-devel"
 # CentOS 8
-DNF="redhat-rpm-config" 
+DNF="redhat-rpm-config"
 # apt agnostic packages
 APT="software-properties-common python-pip python-dev libkrb5-dev"
 # py agnostic packages
@@ -40,7 +40,7 @@ OS="$(sed -n '/^ID=/p' /etc/*release | sed 's/ID=//g;s/"//g')"
 VER="$(sed -n '/VERSION_ID=/p' /etc/*release | sed 's/VERSION_ID=//g;s/"//g')"
 
 # Exit if not run as root
-if [ "$(whoami)" != 'root' ]; 
+if [ "$(whoami)" != 'root' ];
   then
     printf "\nThis script must be run as root\n"
     exit 1
@@ -113,10 +113,10 @@ done
 if [ "$OS" = "ubuntu" ]; then
   printf "\nRemoving any old Ansible PPAs\n"
   add-apt-repository -ry ppa:ansible/ansible > /dev/null 2>&1
-  
+
   printf "\nAdding Ansible PPA\n"
   add-apt-repository -y ppa:ansible/ansible > /dev/null 2>&1
-  
+
   printf "\nUpdating apt cache\n"
   apt-get update > /dev/null 2>&1
 fi
@@ -202,7 +202,7 @@ if [ -z "$GIT" ]; then
       case "$OS" in
         ubuntu)
           printf "\nInstalling git\n"
-          apt install -y git > /dev/null 2>&1
+          apt-get install -y git > /dev/null 2>&1
           printf "\nFetching roles from git\n"
           git clone "$ROLE" "$LOC"/roles > /dev/null 2>&1
         break
@@ -223,7 +223,7 @@ if cut -d: -f1 /etc/group | grep ansible > /dev/null 2>&1;
   then
    printf "\nAnsible group exists, continuing...\n"
   else
-   printf "\nAdding group \"ansible\"\n" 
+   printf "\nAdding group \"ansible\"\n"
    groupadd ansible
 fi
 
@@ -248,7 +248,7 @@ chown -R root:ansible "$LOC"
 chmod g+s "$LOC"
 
 ENDTIME=$(date +%s) # end function for script runtime
-printf "\nFinished in %s" "$((ENDTIME-STARTTIME))" 
+printf "\nFinished in %s" "$((ENDTIME-STARTTIME))"
 printf " seconds.\n\n"
 
 ANSI_VER=$(ansible --version | head -n 1 | awk '{print $2}')
