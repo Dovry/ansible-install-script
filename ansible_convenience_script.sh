@@ -4,7 +4,6 @@ set -e # exit if a command fails
 set -u # exit if a referenced variable is not declared
 STARTTIME=$(date +%s) # start function for script runtime
 
-
 # Set this to the URL of your custom ansible.cfg file, e.g.
 # CFG="https://raw.githubusercontent.com/ansible/ansible/devel/examples/ansible.cfg"
 CFG=""
@@ -123,15 +122,29 @@ fi
 
 # Install Ansible
 printf "\nInstalling Ansible\n"
-if [ "$OS" = "ubuntu" ]; then
-    apt-get install -y ansible > /dev/null 2>&1
-  elif [ "$OS" = "centos" ]; then
-    if [ "$VER" = "8" ]; then
-      pip2 install ansible > /dev/null 2>&1
-    elif [ "$VER" = "7" ]; then
-      yum install -y ansible > /dev/null 2>&1
-    fi
-fi
+while :; do
+  case "$OS" in
+    ubuntu)
+      apt-get install -y ansible > /dev/null 2>&1
+      break
+    ;;
+    centos)
+      while :; do
+        case "$VER" in
+          8)
+            pip2 install ansible > /dev/null 2>&1
+            break
+          ;;
+          7)
+            yum install -y ansible > /dev/null 2>&1
+            break
+          ;;
+        esac
+      done
+      break
+    ;;
+  esac
+done
 
 # Install python pip packages
 printf "\nInstalling python modules. This may take a while\n"
@@ -154,7 +167,7 @@ while :; do
           ;;
         esac
       done
-    break
+      break
     ;;
   esac
 done
@@ -235,8 +248,7 @@ if [ -z "$USERS" ]
     for USER in $USERS;
       do
         useradd "$USER" > /dev/null 2>&1
-        printf "\nUser %s" $USER
-        printf "created\n"
+        printf "\nUser %s created" $USER
         usermod -aG ansible "$USER"
     done
 fi
@@ -248,8 +260,7 @@ chown -R root:ansible "$LOC"
 chmod g+s "$LOC"
 
 ENDTIME=$(date +%s) # end function for script runtime
-printf "\nFinished in %s" "$((ENDTIME-STARTTIME))"
-printf " seconds.\n\n"
+printf "\nFinished in %s seconds\n\n" "$((ENDTIME-STARTTIME))"
 
 ANSI_VER=$(ansible --version | head -n 1 | awk '{print $2}')
 
