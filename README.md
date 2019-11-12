@@ -2,13 +2,20 @@
 
 ## Install Ansible with a shell script
 
-### Currently supports:
+### Tested and works:
 
 * Ubuntu 18.04
 * Ubuntu 16.04
 
 * Centos 8
 * Centos 7
+
+### Untested, but might work
+
+* Ubuntu 16.10
+* Ubuntu 18.10
+* Ubuntu 19.04
+* Ubuntu 19.10
 
 ## How to use this script
 

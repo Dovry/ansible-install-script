@@ -1,6 +1,6 @@
 #!/bin/sh
 # POSIX
-set -e # exit if a command fails
+set -ex # exit if a command fails
 set -u # exit if a referenced variable is not declared
 STARTTIME=$(date +%s) # start function for script runtime
 
@@ -39,10 +39,9 @@ OS="$(sed -n '/^ID=/p' /etc/*release | sed 's/ID=//g;s/"//g')"
 VER="$(sed -n '/VERSION_ID=/p' /etc/*release | sed 's/VERSION_ID=//g;s/"//g')"
 
 # Exit if not run as root
-if [ "$(whoami)" != 'root' ];
-  then
-    printf "\nThis script must be run as root\n"
-    exit 1
+if [ "$(whoami)" != 'root' ]; then
+  printf "\nThis script must be run as root\n"
+  exit 1
 fi
 
 # Check which OS script is being run on. Exits if it's not supported
@@ -53,12 +52,10 @@ while :; do
         case "$VER" in
           18.*|16.*|8|7)
           printf "\n%s %s detected, configuring...\n" "$OS" "$VER"
-          break
-          ;;
+        break;;
         esac
       done
-    break
-    ;;
+  break;;
     *)
       printf "\n%s %s is not supported\n" "$OS" "$VER"
       exit 0
@@ -72,13 +69,11 @@ while :; do
     ubuntu)
       printf "\nupdating apt cache\n"
       apt-get update > /dev/null 2>&1
-      break
-    ;;
+    break;;
     centos)
       printf "\nInstalling epel-release\n"
       yum install -y epel-release > /dev/null 2>&1
-      break
-    ;;
+    break;;
   esac
 done
 
@@ -88,23 +83,19 @@ while :; do
   case "$OS" in
     ubuntu)
       apt-get install -y $APT > /dev/null 2>&1
-      break
-    ;;
+    break;;
     centos)
       while :; do
         case "$VER" in
           8)
             dnf install -y $YUM $DNF $PKGS > /dev/null 2>&1
-            break
-          ;;
+          break;;
           7)
             yum install -y $YUM $PKGS > /dev/null 2>&1
-            break
-          ;;
+          break;;
         esac
       done
-    break
-    ;;
+  break;;
   esac
 done
 
@@ -126,23 +117,19 @@ while :; do
   case "$OS" in
     ubuntu)
       apt-get install -y ansible > /dev/null 2>&1
-      break
-    ;;
+    break;;
     centos)
       while :; do
         case "$VER" in
           8)
             pip2 install ansible > /dev/null 2>&1
-            break
-          ;;
+          break;;
           7)
             yum install -y ansible > /dev/null 2>&1
-            break
-          ;;
+          break;;
         esac
       done
-      break
-    ;;
+    break;;
   esac
 done
 
@@ -152,23 +139,19 @@ while :; do
   case "$OS" in
     ubuntu)
       pip install --upgrade $PYPKGS $UBU_PYPKGS > /dev/null 2>&1
-      break
-    ;;
+    break;;
     centos)
       while :; do
         case "$VER" in
           8)
             pip2 install --upgrade $PYPKGS $CENT_PYPKGS > /dev/null 2>&1
-            break
-          ;;
+          break;;
           7)
             pip install --upgrade $PYPKGS $CENT_PYPKGS > /dev/null 2>&1
-            break
-          ;;
+          break;;
         esac
       done
-      break
-    ;;
+    break;;
   esac
 done
 
@@ -183,7 +166,7 @@ done
 printf "\nCreate any missing files\n"
 for FILE in $FILES;
   do
-   touch $FILE
+   touch "$FILE"
 done
 
 # Make sure ansible.cfg exists under /etc/ansible
@@ -218,15 +201,13 @@ if [ -z "$GIT" ]; then
           apt-get install -y git > /dev/null 2>&1
           printf "\nFetching roles from git\n"
           git clone "$ROLE" "$LOC"/roles > /dev/null 2>&1
-        break
-        ;;
+      break;;
         centos)
           printf "\nInstalling git\n"
           yum install -y git > /dev/null 2>&1
           printf "\nFetching roles from git\n"
           git clone "$ROLE" "$LOC"/roles > /dev/null 2>&1
-        break
-        ;;
+      break;;
       esac
     done
 fi
@@ -241,15 +222,16 @@ if cut -d: -f1 /etc/group | grep ansible > /dev/null 2>&1;
 fi
 
 # Create any users, and add them to group 'ansible' if specified
-if [ -z "$USERS" ]
-  then
-   printf "\nNo users specified, skipping...\n"
-  else
-    for USER in $USERS;
-      do
+if [ -z "$USERS" ]; then
+  printf "\nNo users specified, skipping...\n"
+else
+  for USER in $USERS;
+    do
+      if ! grep -q "$USER" /etc/passwd; then        
         useradd "$USER" > /dev/null 2>&1
-        printf "\nUser %s created" $USER
+        printf "\nUser %s created" "$USER"
         usermod -aG ansible "$USER"
+      fi
     done
 fi
 
@@ -260,15 +242,14 @@ chown -R root:ansible "$LOC"
 chmod g+s "$LOC"
 
 ENDTIME=$(date +%s) # end function for script runtime
-printf "\nFinished in %s seconds\n\n" "$((ENDTIME-STARTTIME))"
+printf "\nFinished in %s seconds\n" "$((ENDTIME-STARTTIME))"
+
+# Exit message on successfull run
+if [ -z "$GALAXY" ] && [ -z "$GIT" ]; then
+  printf "\nDownload some roles to get started\n"
+else
+  printf "\nEnjoy\n"
+fi
 
 ANSI_VER=$(ansible --version | head -n 1 | awk '{print $2}')
-
-# Exit message upon successfully running the script
-printf "Ansible version %s " "$ANSI_VER"
-printf "installed."
-if [ -z "$GALAXY" -o -z "$GIT" ]; then
-  printf "\n\nDownload some roles to get started\n\n"
-else
-  printf " Enjoy\n\n"
-fi
+printf "\nAnsible version %s is installed\n\n" "$ANSI_VER"
