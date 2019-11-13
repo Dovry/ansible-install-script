@@ -11,4 +11,4 @@ env:
     - MOLECULE_DISTRO: ubuntu1604
 
 script:
-  - sh ansible_convenience_script.sh
+  - sudo ./ansible_convenience_script.sh
