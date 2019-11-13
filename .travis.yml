@@ -4,21 +4,10 @@ language: bash
 services: docker
 
 env:
-  - distribution: centos
-    version: 8
-  - distribution: centos
-    version: 7
-  - distribution: ubuntu
-    version: bionic
-  - distribution: ubuntu
-    version: xenial
-
-before_install:
-  - 'sudo docker pull ${distribution}:${version}'
-  - 'sudo docker build --no-cache --rm --file=travis/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible travis' 
+  matrix:
+  # missing centos 7 / 8
+    - dist: bionic
+    - dist: xenial
 
 script:
-  - container_id=$(mktemp)
-  - 'sudo docker run -d --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro --volume:"${PWD}":/tmp/convenience:ro ${distribution}-${version}:ansible > "${container_id}"'
-  - 'sudo docker exec "$(cat ${container_id})" env ./ansible_convenience_script.sh'
-  - 'sudo docker rm -f "$(cat ${container_id})"'
+  - sudo ./ansible_convenience_script.sh
