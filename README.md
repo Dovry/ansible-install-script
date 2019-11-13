@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Dovry/ansible-install-script.svg?branch=master)](https://travis-ci.org/Dovry/ansible-install-script)
+
 # Ansible convenience script
 
 ## Install Ansible with a shell script
