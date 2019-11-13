@@ -1,6 +1,6 @@
 #!/bin/sh
 # POSIX
-set -ex # exit if a command fails
+set -e # exit if a command fails
 set -u # exit if a referenced variable is not declared
 STARTTIME=$(date +%s) # start function for script runtime
 
