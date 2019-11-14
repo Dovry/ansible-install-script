@@ -221,7 +221,7 @@ if cut -d: -f1 /etc/group | grep ansible > /dev/null 2>&1;
    groupadd ansible
 fi
 
-# Create any users, and add them to group 'ansible' if specified
+# Create the users
 if [ -z "$USERS" ]; then
   printf "\nNo users specified, skipping...\n"
 else
@@ -230,6 +230,8 @@ else
       if ! grep -q "$USER" /etc/passwd; then        
         useradd "$USER" > /dev/null 2>&1
         printf "\nUser %s created" "$USER"
+        usermod -aG ansible "$USER"
+      else
         usermod -aG ansible "$USER"
       fi
     done
