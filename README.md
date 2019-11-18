@@ -4,6 +4,8 @@
 
 ## Install Ansible with a shell script
 
+### Now supports pip and containers!
+
 ### Tested and works:
 
 * Ubuntu 18.04
@@ -25,7 +27,15 @@
 git clone git@git.evry.cloud:cloudascore-ansible-roles/ansible_sh.git
 cd ansible_sh
 chmod +x ansible_convenience_script.sh
-sh ansible_convenience_script.sh
+sudo ./ansible_convenience_script.sh
+```
+
+**Arguments**:
+
+```bash
+-h, --help     Shows this help menu
+-p,            Install Ansible via python pip
+-x,            Force normal installation in a container
 ```
 
 **Optional** variables:
