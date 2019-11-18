@@ -10,4 +10,5 @@ env:
     - dist: xenial
 
 script:
+  - sudo chmod +x ansible_convenience_script.sh
   - sudo ./ansible_convenience_script.sh
