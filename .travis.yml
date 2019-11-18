@@ -24,7 +24,7 @@ jobs:
           curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
           sh trigger-travis.sh Dovry docker_ubuntu18_ansible $TRAVIS_ACCESS_TOKEN
         fi
-    - stage: trigger downstream ubuntu 18
+    - stage: trigger downstream centos 8
       jdk: oraclejdk8
       script: |
         echo "TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
