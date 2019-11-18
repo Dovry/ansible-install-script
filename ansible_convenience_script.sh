@@ -70,6 +70,8 @@ fi
 INODE_NUM=$(stat / | awk '/Inode/ {print $4}')
 if [ "$INODE_NUM" -gt '2' ]; then
   PIP=true
+else
+  PIP=""
 fi
 
 # Check for flags
