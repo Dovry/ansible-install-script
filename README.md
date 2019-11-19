@@ -8,10 +8,10 @@
 
 ### Tested and works
 
-* [Ubuntu 18.04](https://github.com/dovry/docker_ubuntu18_ansible) [![Build Status](https://travis-ci.org/dovry/docker_ubuntu18_ansible.svg?branch=master)](https://travis-ci.org/dovry/docker_ubuntu18_ansible)
-* [Ubuntu 16.04](https://github.com/dovry/docker_ubuntu16_ansible) [![Build Status](https://travis-ci.org/dovry/docker_ubuntu16_ansible.svg?branch=master)](https://travis-ci.org/dovry/docker_ubuntu16_ansible)
-* [Centos 8](https://github.com/dovry/docker_centos8_ansible)  [![Build Status](https://travis-ci.org/dovry/docker_centos8_ansible.svg?branch=master)](https://travis-ci.org/dovry/docker_centos8_ansible)
-* [Centos 7](https://github.com/dovry/docker_centos7_ansible)  [![Build Status](https://travis-ci.org/dovry/docker_centos7_ansible.svg?branch=master)](https://travis-ci.org/dovry/docker_centos7_ansible)
+* [![Build Status](https://travis-ci.org/dovry/docker_ubuntu18_ansible.svg?branch=master)](https://travis-ci.org/dovry/docker_ubuntu18_ansible) [Ubuntu 18.04](https://github.com/dovry/docker_ubuntu18_ansible)
+* [![Build Status](https://travis-ci.org/dovry/docker_ubuntu16_ansible.svg?branch=master)](https://travis-ci.org/dovry/docker_ubuntu16_ansible) [Ubuntu 16.04](https://github.com/dovry/docker_ubuntu16_ansible)
+* [![Build Status](https://travis-ci.org/dovry/docker_centos8_ansible.svg?branch=master)](https://travis-ci.org/dovry/docker_centos8_ansible) [Centos 8](https://github.com/dovry/docker_centos8_ansible) 
+* [![Build Status](https://travis-ci.org/dovry/docker_centos7_ansible.svg?branch=master)](https://travis-ci.org/dovry/docker_centos7_ansible) [Centos 7](https://github.com/dovry/docker_centos7_ansible) 
 
 ### Untested, but might work
 
