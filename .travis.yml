@@ -3,13 +3,14 @@ sudo: required
 language: bash
 services: docker
 
+before_script:
+  - sudo chmod +x ansible_convenience_script.sh
+
 
 jobs:
   include:
     - stage: run script
-      script:
-        - chmod +x ansible_convenience_script.sh
-        - sh ansible_convenience_script.sh
+      script: sudo sh ansible_convenience_script.sh
   # https://github.com/mernst/plume-lib/blob/master/bin/trigger-travis.sh
     - stage: trigger downstream centos 8
       jdk: oraclejdk8
