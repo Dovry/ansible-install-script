@@ -9,12 +9,12 @@ services: docker
 #    - dist: bionic
 #    - dist: xenial
 
-script:
-  - sudo chmod +x ansible_convenience_script.sh
-  - sudo ./ansible_convenience_script.sh
-
 jobs:
   include:
+    - stage: run script
+      script:
+        sudo chmod +x ansible_convenience_script.sh
+        sudo ./ansible_convenience_script.sh
   # https://github.com/mernst/plume-lib/blob/master/bin/trigger-travis.sh
     - stage: trigger downstream centos 8
       jdk: oraclejdk8
