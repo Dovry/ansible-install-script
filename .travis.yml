@@ -4,13 +4,60 @@ language: bash
 services: docker
 
 before_script:
+  - sudo docker pull ubuntu/bionic:latest
+  - sudo docker pull ubuntu/xenial:latest
+  - sudo docker pull centos/8:latest
+  - sudo docker pull centos/7:latest
   - sudo chmod +x ansible_convenience_script.sh
-
 
 jobs:
   include:
-    - stage: run script
-      script: sudo sh ansible_convenience_script.sh
+################################
+
+    - stage: run script - docker ubuntu 18
+      script: |
+        docker run -d -it --name pip-ubuntu18 -v $(pwd):/home/script:ro ubuntu:bionic
+        docker exec -it ubuntu18 bash /home/script/ansible_convenience_script.sh
+
+    - stage: run script - docker ubuntu 16
+      script: |
+        docker run -d -it --name pip-ubuntu16 -v $(pwd):/home/script:ro ubuntu:xenial
+        docker exec -it ubuntu16 bash /home/script/ansible_convenience_script.sh
+
+    - stage: run script - docker centos 8
+      script: |
+        docker run -d -it --name pip-centos8 -v $(pwd):/home/script:ro centos:8
+        docker exec -it centos8 bash /home/script/ansible_convenience_script.sh
+
+    - stage: run script - docker centos 7
+      script: |
+        docker run -d -it --name pip-centos7 -v $(pwd):/home/script:ro centos:7
+        docker exec -it centos7 bash /home/script/ansible_convenience_script.sh
+
+################################
+
+    - stage: run script - docker ubuntu 18
+      script: |
+        docker run -d -it --name ubuntu18 -v $(pwd):/home/script:ro ubuntu:bionic
+        docker exec -it ubuntu18 bash /home/script/ansible_convenience_script.sh -x
+
+    - stage: run script - docker ubuntu 16
+      script: |
+        docker run -d -it --name ubuntu16 -v $(pwd):/home/script:ro ubuntu:xenial
+        docker exec -it ubuntu16 bash /home/script/ansible_convenience_script.sh -x
+
+    - stage: run script - docker centos 8
+      script: |
+        docker run -d -it --name centos8 -v $(pwd):/home/script:ro centos:8
+        docker exec -it centos8 bash /home/script/ansible_convenience_script.sh -x
+
+    - stage: run script - docker centos 7
+      script: |
+        docker run -d -it --name centos7 -v $(pwd):/home/script:ro centos:7
+        docker exec -it centos7 bash /home/script/ansible_convenience_script.sh -x
+
+################################
+
   # https://github.com/mernst/plume-lib/blob/master/bin/trigger-travis.sh
     - stage: trigger downstream centos 8
       jdk: oraclejdk8
