@@ -4,18 +4,19 @@ language: bash
 services: docker
 
 env:
-  - IMAGE="ubuntu:bionic"
-  - IMAGE="ubuntu:xenial"
-  - IMAGE="centos:8"
-  - IMAGE="centos:7"
-  - EXEC="ubuntu18"
-  - EXEC="ubuntu16"
-  - EXEC="centos8"
-  - EXEC="centos7"
+  global:
+    - IMAGE="ubuntu:bionic"
+    - IMAGE="ubuntu:xenial"
+    - IMAGE="centos:8"
+    - IMAGE="centos:7"
+    - OS_NAME="ubuntu18"
+    - OS_NAME="ubuntu16"
+    - OS_NAME="centos8"
+    - OS_NAME="centos7"
 
 before_script:
   - "sudo chmod +x ansible_convenience_script.sh"
-  - "docker run -d -it --name ${EXEC} -v $(pwd):/home/script:ro ${IMAGE}"
+  - "docker run -d -it --name ${OS_NAME} -v $(pwd):/home/script:ro ${IMAGE}"
   #- docker run -d -it --name ubuntu16 -v $(pwd):/home/script:ro ubuntu:xenial
   #- docker run -d -it --name centos8 -v $(pwd):/home/script:ro centos:8
   #- docker run -d -it --name centos7 -v $(pwd):/home/script:ro centos:7
@@ -25,16 +26,16 @@ jobs:
 ################################
 
     - stage: Run script
-      script: "docker exec -it ${EXEC} bash /home/script/ansible_convenience_script.sh"
+      script: "docker OS_NAME -it ${OS_NAME} bash /home/script/ansible_convenience_script.sh"
 #
 #    - stage: run script - docker ubuntu 16
-#      script: docker exec -it ubuntu16 bash /home/script/ansible_convenience_script.sh
+#      script: docker OS_NAME -it ubuntu16 bash /home/script/ansible_convenience_script.sh
 #
 #    - stage: run script - docker centos 8
-#      script: docker exec -it centos8 bash /home/script/ansible_convenience_script.sh
+#      script: docker OS_NAME -it centos8 bash /home/script/ansible_convenience_script.sh
 #
 #    - stage: run script - docker centos 7
-#      script: docker exec -it centos7 bash /home/script/ansible_convenience_script.sh
+#      script: docker OS_NAME -it centos7 bash /home/script/ansible_convenience_script.sh
 
 ################################
 
@@ -47,7 +48,7 @@ jobs:
         if [[ ($TRAVIS_BRANCH == master) &&
               ($TRAVIS_PULL_REQUEST == false) ]] ; then
           curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
-          "sh trigger-travis.sh --pro dovry docker_${EXEC}_ansible $TRAVIS_ACCESS_TOKEN"
+          "sh trigger-travis.sh --pro dovry docker_${OS_NAME}_ansible $TRAVIS_ACCESS_TOKEN"
         fi
 
 #    - stage: trigger downstream ubuntu 16
