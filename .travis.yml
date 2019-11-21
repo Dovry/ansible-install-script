@@ -4,94 +4,89 @@ language: bash
 services: docker
 
 before_script:
-  #- sudo docker pull ubuntu/bionic:latest
-  #- sudo docker pull ubuntu/xenial:latest
-  #- sudo docker pull centos/8:latest
-  #- sudo docker pull centos/7:latest
   - sudo chmod +x ansible_convenience_script.sh
 
 jobs:
   include:
+
+################################
+# 
+################################
+# https://github.com/mernst/plume-lib/blob/master/bin/trigger-travis.sh
 ################################
 
-    - stage: run pip script - docker ubuntu 18
+    - stage: run script - docker ubuntu 18
+      jdk: oraclejdk8
       script: |
+        # Run with pip
         docker run -d -it --name pip-ubuntu18 -v $(pwd):/home/script:ro ubuntu:bionic
         docker exec -it pip-ubuntu18 bash /home/script/ansible_convenience_script.sh
 
-    - stage: run pip script - docker ubuntu 16
-      script: |
-        docker run -d -it --name pip-ubuntu16 -v $(pwd):/home/script:ro ubuntu:xenial
-        docker exec -it pip-ubuntu16 bash /home/script/ansible_convenience_script.sh
-
-    - stage: run pip script - docker centos 8
-      script: |
-        docker run -d -it --name pip-centos8 -v $(pwd):/home/script:ro centos:8
-        docker exec -it pip-centos8 bash /home/script/ansible_convenience_script.sh
-
-    - stage: run pip script - docker centos 7
-      script: |
-        docker run -d -it --name pip-centos7 -v $(pwd):/home/script:ro centos:7
-        docker exec -it pip-centos7 bash /home/script/ansible_convenience_script.sh
-
-################################
-
-    - stage: run pgk mgr script - docker ubuntu 18
-      script: |
+        # Run with package manager
         docker run -d -it --name ubuntu18 -v $(pwd):/home/script:ro ubuntu:bionic
         docker exec -it ubuntu18 bash /home/script/ansible_convenience_script.sh -x
 
-    - stage: run pgk mgr script - docker ubuntu 16
-      script: |
-        docker run -d -it --name ubuntu16 -v $(pwd):/home/script:ro ubuntu:xenial
-        docker exec -it ubuntu16 bash /home/script/ansible_convenience_script.sh -x
-
-    - stage: run pgk mgr script - docker centos 8
-      script: |
-        docker run -d -it --name centos8 -v $(pwd):/home/script:ro centos:8
-        docker exec -it centos8 bash /home/script/ansible_convenience_script.sh -x
-
-    - stage: run pgk mgr script - docker centos 7
-      script: |
-        docker run -d -it --name centos7 -v $(pwd):/home/script:ro centos:7
-        docker exec -it centos7 bash /home/script/ansible_convenience_script.sh -x
-
-################################
-
-  # https://github.com/mernst/plume-lib/blob/master/bin/trigger-travis.sh
-    - stage: trigger downstream centos 8
-      jdk: oraclejdk8
-      script: |
-        echo "TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
-        if [[ ($TRAVIS_BRANCH == master) &&
-              ($TRAVIS_PULL_REQUEST == false) ]] ; then
-          curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
-          sh trigger-travis.sh --pro dovry docker_centos8_ansible $TRAVIS_ACCESS_TOKEN
-        fi
-    - stage: trigger downstream centos 7
-      jdk: oraclejdk8
-      script: |
-        echo "TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
-        if [[ ($TRAVIS_BRANCH == master) &&
-              ($TRAVIS_PULL_REQUEST == false) ]] ; then
-          curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
-          sh trigger-travis.sh --pro dovry docker_centos7_ansible $TRAVIS_ACCESS_TOKEN
-        fi
-    - stage: trigger downstream ubuntu 18
-      jdk: oraclejdk8
-      script: |
+        # Trigger downstream
         echo "TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
         if [[ ($TRAVIS_BRANCH == master) &&
               ($TRAVIS_PULL_REQUEST == false) ]] ; then
           curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
           sh trigger-travis.sh --pro dovry docker_ubuntu18_ansible $TRAVIS_ACCESS_TOKEN
         fi
-    - stage: trigger downstream ubuntu 16
+
+    - stage: run script - docker ubuntu 16
       jdk: oraclejdk8
       script: |
+        # Run with pip
+        docker run -d -it --name pip-ubuntu16 -v $(pwd):/home/script:ro ubuntu:xenial
+        docker exec -it pip-ubuntu16 bash /home/script/ansible_convenience_script.sh
+
+        # Run with package manager
+        docker run -d -it --name ubuntu16 -v $(pwd):/home/script:ro ubuntu:xenial
+        docker exec -it ubuntu16 bash /home/script/ansible_convenience_script.sh -x
+
+        # Trigger downstream
         echo "TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
         if [[ ($TRAVIS_BRANCH == master) &&
               ($TRAVIS_PULL_REQUEST == false) ]] ; then
           curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
           sh trigger-travis.sh --pro dovry docker_ubuntu16_ansible $TRAVIS_ACCESS_TOKEN
+        fi
+
+    - stage: run script - docker centos 8
+      jdk: oraclejdk8
+      script: |
+        # Run with pip
+        docker run -d -it --name pip-centos8 -v $(pwd):/home/script:ro centos:8
+        docker exec -it pip-centos8 bash /home/script/ansible_convenience_script.sh
+
+        # Run with package manager
+        docker run -d -it --name centos8 -v $(pwd):/home/script:ro centos:8
+        docker exec -it centos8 bash /home/script/ansible_convenience_script.sh -x
+
+        # Trigger downstream
+        echo "TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
+        if [[ ($TRAVIS_BRANCH == master) &&
+              ($TRAVIS_PULL_REQUEST == false) ]] ; then
+          curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
+          sh trigger-travis.sh --pro dovry docker_centos8_ansible $TRAVIS_ACCESS_TOKEN
+        fi
+
+    - stage: run script - docker centos 7
+      jdk: oraclejdk8
+      script: |
+        # Run with pip
+        docker run -d -it --name pip-centos7 -v $(pwd):/home/script:ro centos:7
+        docker exec -it pip-centos7 bash /home/script/ansible_convenience_script.sh
+
+        # Run with package manager
+        docker run -d -it --name centos7 -v $(pwd):/home/script:ro centos:7
+        docker exec -it centos7 bash /home/script/ansible_convenience_script.sh -x
+
+        # Trigger downstream
+        echo "TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
+        if [[ ($TRAVIS_BRANCH == master) &&
+              ($TRAVIS_PULL_REQUEST == false) ]] ; then
+          curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
+          sh trigger-travis.sh --pro dovry docker_centos7_ansible $TRAVIS_ACCESS_TOKEN
         fi
