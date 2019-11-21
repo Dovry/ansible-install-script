@@ -4,19 +4,18 @@ language: bash
 services: docker
 
 env:
-  - IMAGE=ubuntu:bionic
-  - IMAGE=ubuntu:xenial
-  - IMAGE=centos:8
-  - IMAGE=centos:7
-  - EXEC=ubuntu18
-  - EXEC=ubuntu16
-  - EXEC=centos8
-  - EXEC=centos7
-
+  - IMAGE="ubuntu:bionic"
+  - IMAGE="ubuntu:xenial"
+  - IMAGE="centos:8"
+  - IMAGE="centos:7"
+  - EXEC="ubuntu18"
+  - EXEC="ubuntu16"
+  - EXEC="centos8"
+  - EXEC="centos7"
 
 before_script:
-  - sudo chmod +x ansible_convenience_script.sh
-  - docker run -d -it --name $EXEC -v $(pwd):/home/script:ro $IMAGE
+  - "sudo chmod +x ansible_convenience_script.sh"
+  - "docker run -d -it --name ${EXEC} -v $(pwd):/home/script:ro ${IMAGE}"
   #- docker run -d -it --name ubuntu16 -v $(pwd):/home/script:ro ubuntu:xenial
   #- docker run -d -it --name centos8 -v $(pwd):/home/script:ro centos:8
   #- docker run -d -it --name centos7 -v $(pwd):/home/script:ro centos:7
@@ -25,8 +24,8 @@ jobs:
   include:
 ################################
 
-    - stage: run script - $EXEC
-      script: docker exec -it $EXEC bash /home/script/ansible_convenience_script.sh
+    - stage: Run script
+      script: "docker exec -it ${EXEC} bash /home/script/ansible_convenience_script.sh"
 #
 #    - stage: run script - docker ubuntu 16
 #      script: docker exec -it ubuntu16 bash /home/script/ansible_convenience_script.sh
@@ -41,14 +40,14 @@ jobs:
 
   # https://github.com/mernst/plume-lib/blob/master/bin/trigger-travis.sh
   
-    - stage: trigger downstream $EXEC
+    - stage: trigger downstream ${EXEC}
       jdk: oraclejdk8
       script: |
         echo "TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
         if [[ ($TRAVIS_BRANCH == master) &&
               ($TRAVIS_PULL_REQUEST == false) ]] ; then
           curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
-          sh trigger-travis.sh --pro dovry docker_$EXEC_ansible $TRAVIS_ACCESS_TOKEN
+          "sh trigger-travis.sh --pro dovry docker_${EXEC}_ansible $TRAVIS_ACCESS_TOKEN"
         fi
 
 #    - stage: trigger downstream ubuntu 16
