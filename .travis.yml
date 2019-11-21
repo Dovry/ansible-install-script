@@ -40,7 +40,7 @@ jobs:
 
   # https://github.com/mernst/plume-lib/blob/master/bin/trigger-travis.sh
   
-    - stage: trigger downstream ${EXEC}
+    - stage: trigger downstream container builds
       jdk: oraclejdk8
       script: |
         echo "TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
