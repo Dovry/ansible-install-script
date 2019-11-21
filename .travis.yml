@@ -4,10 +4,10 @@ language: bash
 services: docker
 
 before_script:
-  - sudo docker pull ubuntu/bionic:latest
-  - sudo docker pull ubuntu/xenial:latest
-  - sudo docker pull centos/8:latest
-  - sudo docker pull centos/7:latest
+  #- sudo docker pull ubuntu/bionic:latest
+  #- sudo docker pull ubuntu/xenial:latest
+  #- sudo docker pull centos/8:latest
+  #- sudo docker pull centos/7:latest
   - sudo chmod +x ansible_convenience_script.sh
 
 jobs:
