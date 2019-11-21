@@ -3,18 +3,13 @@ sudo: required
 language: bash
 services: docker
 
-#env:
-#  matrix:
-#  # missing centos 7 / 8
-#    - dist: bionic
-#    - dist: xenial
 
 jobs:
   include:
     - stage: run script
       script:
-        chmod +x ansible_convenience_script.sh
-        ./ansible_convenience_script.sh
+        - chmod +x ansible_convenience_script.sh
+        - sh ansible_convenience_script.sh
   # https://github.com/mernst/plume-lib/blob/master/bin/trigger-travis.sh
     - stage: trigger downstream centos 8
       jdk: oraclejdk8
