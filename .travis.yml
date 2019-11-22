@@ -5,33 +5,40 @@ services: docker
 cache: pip
 
 env:
-  - OS_NAME="ubuntu18"
-  - OS_NAME="ubuntu16"
-  - OS_NAME="centos8"
-  - OS_NAME="centos7"
+  global:
+    - SCRIPT: /home/script/ansible_convenience_script.sh
+  OS:
+    - OS_NAME: ubuntu18
+    - OS_NAME: ubuntu16
+    - OS_NAME: centos8
+    - OS_NAME: centos7
 
 before_script:
   - sudo chmod +x ansible_convenience_script.sh
-  - "docker run -d -it --name ubuntu18 -v $(pwd):/home/script:ro ubuntu:bionic"
-  - "docker run -d -it --name ubuntu16 -v $(pwd):/home/script:ro ubuntu:xenial"
-  - "docker run -d -it --name centos8 -v $(pwd):/home/script:ro centos:8"
-  - "docker run -d -it --name centos7 -v $(pwd):/home/script:ro centos:7"
 
 jobs:
   include:
 ################################
 
     - stage: Run script - ubuntu 18
-      script: docker exec -it ubuntu18 bash /home/script/ansible_convenience_script.sh
+      script: |
+        docker run -d -it --name ubuntu18 -v $(pwd):/home/script:ro ubuntu:bionic
+        docker exec -it ubuntu18 bash $SCRIPT
 
     - stage: run script - ubuntu 16
-      script: docker exec -it ubuntu16 bash /home/script/ansible_convenience_script.sh
+      script: |
+        docker run -d -it --name ubuntu16 -v $(pwd):/home/script:ro ubuntu:xenial
+        docker exec -it ubuntu16 bash $SCRIPT
 
     - stage: run script - centos 8
-      script: docker exec -it centos8 bash /home/script/ansible_convenience_script.sh
+      script: |
+        docker run -d -it --name centos8 -v $(pwd):/home/script:ro centos:8
+        docker exec -it centos8 bash $SCRIPT
 
     - stage: run script - centos 7
-      script: docker exec -it centos7 bash /home/script/ansible_convenience_script.sh
+      script: |
+        docker run -d -it --name centos7 -v $(pwd):/home/script:ro centos:7
+        docker exec -it centos7 bash $SCRIPT
 
 ################################
 
@@ -44,35 +51,35 @@ jobs:
         if [[ ($TRAVIS_BRANCH == master) &&
               ($TRAVIS_PULL_REQUEST == false) ]] ; then
           curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
-          "sh trigger-travis.sh --pro dovry docker_$OS_NAME_ansible $TRAVIS_ACCESS_TOKEN"
+          "sh trigger-travis.sh --pro dovry docker_ubuntu18_ansible $TRAVIS_ACCESS_TOKEN"
         fi
 
-#    - stage: trigger downstream ubuntu 16
-#      jdk: oraclejdk8
-#      script: |
-#        echo "TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
-#        if [[ ($TRAVIS_BRANCH == master) &&
-#              ($TRAVIS_PULL_REQUEST == false) ]] ; then
-#          curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
-#          sh trigger-travis.sh --pro dovry docker_ubuntu16_ansible $TRAVIS_ACCESS_TOKEN
-#        fi
-#
-#    - stage: trigger downstream centos 8
-#      jdk: oraclejdk8
-#      script: |
-#        echo "TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
-#        if [[ ($TRAVIS_BRANCH == master) &&
-#              ($TRAVIS_PULL_REQUEST == false) ]] ; then
-#          curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
-#          sh trigger-travis.sh --pro dovry docker_centos8_ansible $TRAVIS_ACCESS_TOKEN
-#        fi
-#
-#    - stage: trigger downstream centos 7
-#      jdk: oraclejdk8
-#      script: |
-#        echo "TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
-#        if [[ ($TRAVIS_BRANCH == master) &&
-#              ($TRAVIS_PULL_REQUEST == false) ]] ; then
-#          curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
-#          sh trigger-travis.sh --pro dovry docker_centos7_ansible $TRAVIS_ACCESS_TOKEN
-#        fi
+    - stage: trigger downstream ubuntu 16
+      jdk: oraclejdk8
+      script: |
+        echo "TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
+        if [[ ($TRAVIS_BRANCH == master) &&
+              ($TRAVIS_PULL_REQUEST == false) ]] ; then
+          curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
+          sh trigger-travis.sh --pro dovry docker_ubuntu16_ansible $TRAVIS_ACCESS_TOKEN
+        fi
+
+    - stage: trigger downstream centos 8
+      jdk: oraclejdk8
+      script: |
+        echo "TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
+        if [[ ($TRAVIS_BRANCH == master) &&
+              ($TRAVIS_PULL_REQUEST == false) ]] ; then
+          curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
+          sh trigger-travis.sh --pro dovry docker_centos8_ansible $TRAVIS_ACCESS_TOKEN
+        fi
+
+    - stage: trigger downstream centos 7
+      jdk: oraclejdk8
+      script: |
+        echo "TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
+        if [[ ($TRAVIS_BRANCH == master) &&
+              ($TRAVIS_PULL_REQUEST == false) ]] ; then
+          curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
+          sh trigger-travis.sh --pro dovry docker_centos7_ansible $TRAVIS_ACCESS_TOKEN
+        fi
