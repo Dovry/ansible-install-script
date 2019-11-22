@@ -25,13 +25,13 @@ jobs:
       script: docker exec -it ubuntu18 bash /home/script/ansible_convenience_script.sh
 
     - stage: run script - ubuntu 16
-      script: docker OS_NAME -it ubuntu16 bash /home/script/ansible_convenience_script.sh
+      script: docker exec -it ubuntu16 bash /home/script/ansible_convenience_script.sh
 
     - stage: run script - centos 8
-      script: docker OS_NAME -it centos8 bash /home/script/ansible_convenience_script.sh
+      script: docker exec -it centos8 bash /home/script/ansible_convenience_script.sh
 
     - stage: run script - centos 7
-      script: docker OS_NAME -it centos7 bash /home/script/ansible_convenience_script.sh
+      script: docker exec -it centos7 bash /home/script/ansible_convenience_script.sh
 
 ################################
 
