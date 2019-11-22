@@ -2,23 +2,20 @@
 sudo: required
 language: bash
 services: docker
+cache: pip
 
 env:
-  - IMAGE: "ubuntu:bionic"
-  - IMAGE: "ubuntu:xenial"
-  - IMAGE: "centos:8"
-  - IMAGE: "centos:7"
-  - OS_NAME: "ubuntu18"
-  - OS_NAME: "ubuntu16"
-  - OS_NAME: "centos8"
-  - OS_NAME: "centos7"
+  - OS_NAME="ubuntu18"
+  - OS_NAME="ubuntu16"
+  - OS_NAME="centos8"
+  - OS_NAME="centos7"
 
 before_script:
   - "sudo chmod +x ansible_convenience_script.sh"
-  - "docker run -d -it --name ${OS_NAME} -v $(pwd):/home/script:ro ${IMAGE}"
-  #- docker run -d -it --name ubuntu16 -v $(pwd):/home/script:ro ubuntu:xenial
-  #- docker run -d -it --name centos8 -v $(pwd):/home/script:ro centos:8
-  #- docker run -d -it --name centos7 -v $(pwd):/home/script:ro centos:7
+  - docker run -d -it --name ${OS_NAME} -v $(pwd):/home/script:ro ubuntu:bionic
+  - docker run -d -it --name ${OS_NAME} -v $(pwd):/home/script:ro ubuntu:xenial
+  - docker run -d -it --name ${OS_NAME} -v $(pwd):/home/script:ro centos:8
+  - docker run -d -it --name ${OS_NAME} -v $(pwd):/home/script:ro centos:7
 
 jobs:
   include:
