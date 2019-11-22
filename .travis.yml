@@ -12,17 +12,17 @@ env:
 
 before_script:
   - "sudo chmod +x ansible_convenience_script.sh"
-  - "docker run -d -it --name ${OS_NAME} -v $(pwd):/home/script:ro ubuntu:bionic"
-  - "docker run -d -it --name ${OS_NAME} -v $(pwd):/home/script:ro ubuntu:xenial"
-  - "docker run -d -it --name ${OS_NAME} -v $(pwd):/home/script:ro centos:8"
-  - "docker run -d -it --name ${OS_NAME} -v $(pwd):/home/script:ro centos:7"
+  - "docker run -d -it --name $OS_NAME -v $(pwd):/home/script:ro ubuntu:bionic"
+  - "docker run -d -it --name $OS_NAME -v $(pwd):/home/script:ro ubuntu:xenial"
+  - "docker run -d -it --name $OS_NAME -v $(pwd):/home/script:ro centos:8"
+  - "docker run -d -it --name $OS_NAME -v $(pwd):/home/script:ro centos:7"
 
 jobs:
   include:
 ################################
 
     - stage: Run script
-      script: "docker exec -it ${OS_NAME} bash /home/script/ansible_convenience_script.sh"
+      script: "docker exec -it $OS_NAME bash /home/script/ansible_convenience_script.sh"
 #
 #    - stage: run script - docker ubuntu 16
 #      script: docker OS_NAME -it ubuntu16 bash /home/script/ansible_convenience_script.sh
@@ -44,7 +44,7 @@ jobs:
         if [[ ($TRAVIS_BRANCH == master) &&
               ($TRAVIS_PULL_REQUEST == false) ]] ; then
           curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
-          "sh trigger-travis.sh --pro dovry docker_${OS_NAME}_ansible $TRAVIS_ACCESS_TOKEN"
+          "sh trigger-travis.sh --pro dovry docker_$OS_NAME_ansible $TRAVIS_ACCESS_TOKEN"
         fi
 
 #    - stage: trigger downstream ubuntu 16
