@@ -4,15 +4,14 @@ language: bash
 services: docker
 
 env:
-  global:
-    - IMAGE="ubuntu:bionic"
-    - IMAGE="ubuntu:xenial"
-    - IMAGE="centos:8"
-    - IMAGE="centos:7"
-    - OS_NAME="ubuntu18"
-    - OS_NAME="ubuntu16"
-    - OS_NAME="centos8"
-    - OS_NAME="centos7"
+  - IMAGE: "ubuntu:bionic"
+  - IMAGE: "ubuntu:xenial"
+  - IMAGE: "centos:8"
+  - IMAGE: "centos:7"
+  - OS_NAME: "ubuntu18"
+  - OS_NAME: "ubuntu16"
+  - OS_NAME: "centos8"
+  - OS_NAME: "centos7"
 
 before_script:
   - "sudo chmod +x ansible_convenience_script.sh"
