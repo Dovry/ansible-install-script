@@ -12,10 +12,10 @@ env:
 
 before_script:
   - "sudo chmod +x ansible_convenience_script.sh"
-  - docker run -d -it --name ${OS_NAME} -v $(pwd):/home/script:ro ubuntu:bionic
-  - docker run -d -it --name ${OS_NAME} -v $(pwd):/home/script:ro ubuntu:xenial
-  - docker run -d -it --name ${OS_NAME} -v $(pwd):/home/script:ro centos:8
-  - docker run -d -it --name ${OS_NAME} -v $(pwd):/home/script:ro centos:7
+  - "docker run -d -it --name ${OS_NAME} -v $(pwd):/home/script:ro ubuntu:bionic"
+  - "docker run -d -it --name ${OS_NAME} -v $(pwd):/home/script:ro ubuntu:xenial"
+  - "docker run -d -it --name ${OS_NAME} -v $(pwd):/home/script:ro centos:8"
+  - "docker run -d -it --name ${OS_NAME} -v $(pwd):/home/script:ro centos:7"
 
 jobs:
   include:
