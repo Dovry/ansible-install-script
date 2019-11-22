@@ -7,11 +7,7 @@ cache: pip
 env:
   global:
     - SCRIPT: /home/script/ansible_convenience_script.sh
-#  matrix:
-#    - OS_NAME: ubuntu18
-#    - OS_NAME: ubuntu16
-#    - OS_NAME: centos8
-#    - OS_NAME: centos7
+    - GH_USER: dovry
 
 before_script:
   - sudo chmod +x ansible_convenience_script.sh
@@ -51,7 +47,7 @@ jobs:
         if [[ ($TRAVIS_BRANCH == master) &&
               ($TRAVIS_PULL_REQUEST == false) ]] ; then
           curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
-          sh trigger-travis.sh --pro dovry docker_ubuntu18_ansible $TRAVIS_ACCESS_TOKEN
+          sh trigger-travis.sh --pro $GH_USER docker_ubuntu18_ansible $TRAVIS_ACCESS_TOKEN
         fi
 
     - stage: trigger downstream ubuntu 16
@@ -61,7 +57,7 @@ jobs:
         if [[ ($TRAVIS_BRANCH == master) &&
               ($TRAVIS_PULL_REQUEST == false) ]] ; then
           curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
-          sh trigger-travis.sh --pro dovry docker_ubuntu16_ansible $TRAVIS_ACCESS_TOKEN
+          sh trigger-travis.sh --pro $GH_USER docker_ubuntu16_ansible $TRAVIS_ACCESS_TOKEN
         fi
 
     - stage: trigger downstream centos 8
@@ -71,7 +67,7 @@ jobs:
         if [[ ($TRAVIS_BRANCH == master) &&
               ($TRAVIS_PULL_REQUEST == false) ]] ; then
           curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
-          sh trigger-travis.sh --pro dovry docker_centos8_ansible $TRAVIS_ACCESS_TOKEN
+          sh trigger-travis.sh --pro $GH_USER docker_centos8_ansible $TRAVIS_ACCESS_TOKEN
         fi
 
     - stage: trigger downstream centos 7
@@ -81,5 +77,5 @@ jobs:
         if [[ ($TRAVIS_BRANCH == master) &&
               ($TRAVIS_PULL_REQUEST == false) ]] ; then
           curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
-          sh trigger-travis.sh --pro dovry docker_centos7_ansible $TRAVIS_ACCESS_TOKEN
+          sh trigger-travis.sh --pro $GH_USER docker_centos7_ansible $TRAVIS_ACCESS_TOKEN
         fi
