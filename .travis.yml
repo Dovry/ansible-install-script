@@ -7,6 +7,7 @@ cache: pip
 env:
   global:
     - SCRIPT: /home/script/ansible_convenience_script.sh
+    - VOLUME: "$(pwd):/home/script:ro"
     - GH_USER: dovry
 
 before_script:
@@ -18,22 +19,22 @@ jobs:
 
     - stage: Run script - ubuntu 18
       script: |
-        docker run -d -it --name ubuntu18 -v $(pwd):/home/script:ro ubuntu:bionic
+        docker run -d -it --name ubuntu18 -v $VOLUME ubuntu:bionic
         docker exec -it ubuntu18 bash $SCRIPT
 
     - stage: run script - ubuntu 16
       script: |
-        docker run -d -it --name ubuntu16 -v $(pwd):/home/script:ro ubuntu:xenial
+        docker run -d -it --name ubuntu16 -v $VOLUME ubuntu:xenial
         docker exec -it ubuntu16 bash $SCRIPT
 
     - stage: run script - centos 8
       script: |
-        docker run -d -it --name centos8 -v $(pwd):/home/script:ro centos:8
+        docker run -d -it --name centos8 -v $VOLUME centos:8
         docker exec -it centos8 bash $SCRIPT
 
     - stage: run script - centos 7
       script: |
-        docker run -d -it --name centos7 -v $(pwd):/home/script:ro centos:7
+        docker run -d -it --name centos7 -v $VOLUME centos:7
         docker exec -it centos7 bash $SCRIPT
 
 ################################
