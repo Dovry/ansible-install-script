@@ -25,7 +25,7 @@ jobs:
 ################################
 
     - stage: Run script
-      script: "docker OS_NAME -it ${OS_NAME} bash /home/script/ansible_convenience_script.sh"
+      script: "docker exec -it ${OS_NAME} bash /home/script/ansible_convenience_script.sh"
 #
 #    - stage: run script - docker ubuntu 16
 #      script: docker OS_NAME -it ubuntu16 bash /home/script/ansible_convenience_script.sh
