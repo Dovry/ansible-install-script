@@ -11,27 +11,27 @@ env:
   - OS_NAME="centos7"
 
 before_script:
-  - "sudo chmod +x ansible_convenience_script.sh"
-  - "docker run -d -it --name $OS_NAME -v $(pwd):/home/script:ro ubuntu:bionic"
-  - "docker run -d -it --name $OS_NAME -v $(pwd):/home/script:ro ubuntu:xenial"
-  - "docker run -d -it --name $OS_NAME -v $(pwd):/home/script:ro centos:8"
-  - "docker run -d -it --name $OS_NAME -v $(pwd):/home/script:ro centos:7"
+  - sudo chmod +x ansible_convenience_script.sh
+  - "docker run -d -it --name ubuntu18 -v $(pwd):/home/script:ro ubuntu:bionic"
+  - "docker run -d -it --name ubuntu16 -v $(pwd):/home/script:ro ubuntu:xenial"
+  - "docker run -d -it --name centos8 -v $(pwd):/home/script:ro centos:8"
+  - "docker run -d -it --name centos7 -v $(pwd):/home/script:ro centos:7"
 
 jobs:
   include:
 ################################
 
-    - stage: Run script
-      script: "docker exec -it $OS_NAME bash /home/script/ansible_convenience_script.sh"
-#
-#    - stage: run script - docker ubuntu 16
-#      script: docker OS_NAME -it ubuntu16 bash /home/script/ansible_convenience_script.sh
-#
-#    - stage: run script - docker centos 8
-#      script: docker OS_NAME -it centos8 bash /home/script/ansible_convenience_script.sh
-#
-#    - stage: run script - docker centos 7
-#      script: docker OS_NAME -it centos7 bash /home/script/ansible_convenience_script.sh
+    - stage: Run script - ubuntu 18
+      script: docker exec -it ubuntu18 bash /home/script/ansible_convenience_script.sh
+
+    - stage: run script - ubuntu 16
+      script: docker OS_NAME -it ubuntu16 bash /home/script/ansible_convenience_script.sh
+
+    - stage: run script - centos 8
+      script: docker OS_NAME -it centos8 bash /home/script/ansible_convenience_script.sh
+
+    - stage: run script - centos 7
+      script: docker OS_NAME -it centos7 bash /home/script/ansible_convenience_script.sh
 
 ################################
 
