@@ -7,7 +7,7 @@ cache: pip
 env:
   global:
     - SCRIPT: /home/script/ansible_convenience_script.sh
-  OS:
+  matrix:
     - OS_NAME: ubuntu18
     - OS_NAME: ubuntu16
     - OS_NAME: centos8
