@@ -177,13 +177,13 @@ if [ "$PIP" != true ]; then
   while :; do
     case "$OS" in
       ubuntu)
-        apt-get install -y ansible > /dev/null 2>&1
+        apt-get install --reinstall -y ansible > /dev/null 2>&1
       break;;
       centos)
         while :; do
           case "$VER" in
             8)
-              pip2 install ansible > /dev/null 2>&1
+              pip2 install --upgrade --force-reinstall ansible > /dev/null 2>&1
             break;;
             7)
               yum install -y ansible > /dev/null 2>&1
@@ -205,10 +205,10 @@ if [ "$PIP" != true ]; then
         while :; do
           case "$VER" in
             8)
-              pip2 install --upgrade $PYPKGS $CENT_PYPKGS > /dev/null 2>&1
+              pip2 install --disable-pip-version-check --upgrade $PYPKGS $CENT_PYPKGS > /dev/null 2>&1
             break;;
             7)
-              pip install --upgrade $PYPKGS $CENT_PYPKGS > /dev/null 2>&1
+              pip install --disable-pip-version-check --upgrade $PYPKGS $CENT_PYPKGS > /dev/null 2>&1
             break;;
           esac
         done
@@ -235,7 +235,7 @@ if [ "$PIP" = true ]; then
               wget -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py
               python /tmp/get-pip.py
               # Install Ansible
-              pip install $PIP_ANSI
+              pip install --disable-pip-version-check --upgrade --force-reinstall $PIP_ANSI
               # Cleanup
               rm -Rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man /root/.cache/pip/ /tmp/get-pip.py
               find / -name '*.pyc' -delete
@@ -250,7 +250,7 @@ if [ "$PIP" = true ]; then
               wget -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py
               python /tmp/get-pip.py
               # Install Ansible
-              pip install $PIP_ANSI
+              pip install --disable-pip-version-check --upgrade --force-reinstall $PIP_ANSI
               # Cleanup
               rm -Rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man /tmp/get-pip.py
               find / -name '*.pyc' -delete
