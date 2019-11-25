@@ -59,7 +59,7 @@ VER="$(sed -n '/VERSION_ID=/p' /etc/*release | sed 's/VERSION_ID=//g;s/"//g')"
 
 # Exit if not run as root
 if [ "$(whoami)" != 'root' ]; then
-  printf "\nThis script must be run as root/with sudo\n"
+  printf "\nThis script must be run with sudo or as root\n"
   exit 1
 fi
 
