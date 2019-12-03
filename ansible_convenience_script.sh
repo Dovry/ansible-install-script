@@ -228,7 +228,7 @@ if [ "$PIP" = true ]; then
           case "$VER" in
             18.*)
               # Prepare image for Ansible install
-              apt-get -y --no-install-recommends install $C_UBU $C_UBU18
+              apt-get -y --no-install-recommends --allow-unauthenticated install $C_UBU $C_UBU18
               locale-gen en_US.UTF-8
               sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
               # Download and install pip
@@ -243,7 +243,7 @@ if [ "$PIP" = true ]; then
             break;;
             16.*)
               # Prepare image for Ansible install
-              apt-get -y --no-install-recommends install $C_UBU $C_UBU16
+              apt-get -y --no-install-recommends --allow-unauthenticated install $C_UBU $C_UBU16
               locale-gen en_US.UTF-8
               sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
               # Download and install pip
