@@ -1,0 +1,19 @@
+name: CI
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        container: [ubuntu16, ubuntu18, centos7, centos8]
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Allow execute on script
+      run: chmod +x ansible_convenience_script.sh
+
+    - name: run container
+      run: docker run -d -it --name test-container -v $(pwd):/tmp dovry/docker_${{ matrix.container }}_ansible
+
+    - name: run script in container
+      run: docker exec test-container bash /tmp/ansible_convenience_script.sh
