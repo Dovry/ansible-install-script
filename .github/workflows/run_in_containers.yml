@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        container: [ubuntu:xenial, ubuntu:bionic, centos:7, centos:8]
+        container: ["ubuntu:xenial", "ubuntu:bionic", "centos:7", "centos:8"]
     steps:
     - uses: actions/checkout@v1
 
@@ -13,7 +13,7 @@ jobs:
       run: chmod +x ansible_convenience_script.sh
 
     - name: run container
-      run: docker run -d -it --name test-container -v $(pwd):/tmp ${{ matrix.container }}
+      run: "docker run -d -it --name test-container -v $(pwd):/tmp ${{ matrix.container }}"
 
     - name: run script in container
       run: docker exec test-container bash /tmp/ansible_convenience_script.sh
