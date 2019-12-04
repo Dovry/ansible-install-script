@@ -13,7 +13,7 @@ jobs:
       run: chmod +x ansible_convenience_script.sh
 
     - name: run container
-      run: "docker run -d -it --name container -v $(pwd):/tmp ${{ matrix.container }}"
+      run: "docker run -d -it --name test-container -v $(pwd):/tmp ${{ matrix.container }}"
 
     - name: run script in container
-      run: docker exec container bash /tmp/ansible_convenience_script.sh
+      run: docker exec test-container bash /tmp/ansible_convenience_script.sh
