@@ -1,5 +1,7 @@
 # Ansible convenience script
 
+![Build Status](https://github.com/dovry/ansible-install-script/workflows/CI/badge.svg)
+
 [![Build Status](https://travis-ci.com/Dovry/ansible-install-script.svg?branch=master)](https://travis-ci.com/Dovry/ansible-install-script)
 
 ## Install Ansible with a shell script
