@@ -1,4 +1,4 @@
-name: run in containers
+name: Run in containers
 on: [push]
 jobs:
   build:
