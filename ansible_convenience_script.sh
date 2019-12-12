@@ -130,7 +130,7 @@ while :; do
   case "$OS" in
     ubuntu)
       printf "\nupdating apt cache\n"
-      apt-get update #> /dev/null 2>&1
+      apt-get update > /dev/null 2>&1
     break;;
     centos)
       printf "\nInstalling epel-release\n"
