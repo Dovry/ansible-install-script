@@ -4,7 +4,7 @@
 
 ## Install Ansible with a shell script
 
-### Now supports pip and containers
+### Now supports pip installation and containers
 
 ### Tested and works
 
@@ -48,4 +48,6 @@ GIT=""
 GALAXY=""
 # Space seperated list of users to add to the 'ansible' group
 USERS=""
+# Space seperated pip packages to install
+PYPKG=""
 ```

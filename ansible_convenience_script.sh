@@ -16,6 +16,12 @@ GALAXY=""
 # Space seperated list of users to add to the 'ansible' group, e.g.
 # USERS="alice bob charlie diane"
 USERS=""
+# Space seperated list of desired pip packages
+# THESE ARE INSTALLED AS ROOT BY DEFAULT, WHICH WILL PROBABLY NOT WORK FOR MOST PACKAGES
+PYPKG=""
+# 
+UBU_PYPKGS=""
+CENT_PYPKGS=""
 
 # system agnostic packages
 PKGS="gcc curl sshpass"
@@ -25,10 +31,7 @@ YUM="python2-pip kernel-devel gcc-c++ libxslt-devel libffi-devel openssl-devel"
 DNF="redhat-rpm-config"
 # apt agnostic packages
 APT="software-properties-common python-pip python-dev libkrb5-dev"
-# py agnostic packages
-PYPKGS="pywinrm py"
-UBU_PYPKGS="pykerberos pygssapi requests-kerberos"
-CENT_PYPKGS=""
+
 LOC="/etc/ansible"
 ANSI_FOLDERS="facts files inventory playbooks plugins roles inventory/group_vars inventory/host_vars"
 FILES="/etc/ansible/inventory/hosts /etc/ansible/hosts /etc/ansible/ansible.cfg"
@@ -194,27 +197,29 @@ if [ "$PIP" != true ]; then
     esac
   done
 
-  # Install python pip packages
-  printf "\nInstalling python modules. This may take a while\n"
-  while :; do
-    case "$OS" in
-      ubuntu)
-        pip install --upgrade $PYPKGS $UBU_PYPKGS > /dev/null 2>&1
-      break;;
-      centos)
-        while :; do
-          case "$VER" in
-            8)
-              pip2 install --disable-pip-version-check --upgrade $PYPKGS $CENT_PYPKGS > /dev/null 2>&1
-            break;;
-            7)
-              pip install --disable-pip-version-check --upgrade $PYPKGS $CENT_PYPKGS > /dev/null 2>&1
-            break;;
-          esac
-        done
-      break;;
-    esac
-  done
+  if [ -z "$PYPKG" ] || [ -z "$UBU_PYPKGS" ] || [ -z "$CENT_PYPGS" ]; then
+    # Install python pip packages
+    printf "\nInstalling pip packages. This may take a while\n"
+    while :; do
+      case "$OS" in
+        ubuntu)
+          pip install --upgrade $PYPKGS $UBU_PYPKGS > /dev/null 2>&1
+        break;;
+        centos)
+          while :; do
+            case "$VER" in
+              8)
+                pip2 install --disable-pip-version-check --upgrade $PYPKGS $CENT_PYPKGS > /dev/null 2>&1
+              break;;
+              7)
+                pip install --disable-pip-version-check --upgrade $PYPKGS $CENT_PYPKGS > /dev/null 2>&1
+              break;;
+            esac
+          done
+        break;;
+      esac
+    done
+  fi
 
 fi
 
