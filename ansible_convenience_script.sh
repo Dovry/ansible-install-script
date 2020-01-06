@@ -11,7 +11,7 @@ CFG=""
 # GIT="https://github.com/geerlingguy/ansible-role-java.git https://github.com/geerlingguy/ansible-role-nodejs.git"
 GIT=""
 # Space seperated list of ansible-galaxy roles, e.g.
-# GALAXY="geerlingguy.docker geerlingguy.apache geerlingguy.nodejs"
+# GALAXY="geerlingguy.ntp geerlingguy.nginx"
 GALAXY=""
 # Space seperated list of users to add to the 'ansible' group, e.g.
 # USERS="alice bob charlie diane"
@@ -37,7 +37,7 @@ USERS=""
  C_UBU18="apt-utils"
  C_UBU16="python-software-properties"
 
-# Install systemd function
+# Install systemd function - Required to run Ansible against localhost in containers
  SYSD () { 
   (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i = systemd-tmpfiles-setup.service ] || rm -f $i; done);
   rm -f /lib/systemd/system/multi-user.target.wants/*;
@@ -52,15 +52,17 @@ USERS=""
 # Help menu
  HELP () {
   printf "Options:"
-  printf "\nTHESE ARE CASE SENSITIVE"
+  printf "\n"
+  printf "\nTo specify multiple users, roles, etc., use the option multiple times"
   printf "\n"
   printf "\n  -c,         Specify a url to an ansible.cfg file to download"
   printf "\n  -f,         Force normal installation in a container"
-  printf "\n  -g,         Git roles to download"
-  printf "\n  -G,         Galaxy roles to download"
+  printf "\n  -g,         Git role to download"
+  printf "\n  -G,         Galaxy role to download"
   printf "\n  -h, -H,     Shows this help menu"
+  printf "\n  -l,         Location where Ansible files are placed, default is /etc/ansible"
   printf "\n  -p,         Install Ansible via python pip"
-  printf "\n  -u,         Creates, or adds existing users to the group 'ansible'"
+  printf "\n  -u,         Creates, or adds an existing user to the group 'ansible'"
   printf "\n\n"
   exit 0
  }
@@ -80,8 +82,10 @@ USERS=""
  INODE_NUM=$(stat / | awk '/Inode/ {print $4}')
  if [ "$INODE_NUM" -gt '2' ]; then
   PIP=true
+  CONTAINER="container" # used for script output
  else
   PIP=""
+  CONTAINER="" # used for script output
  fi
 
 # Options
@@ -89,10 +93,11 @@ USERS=""
   case $option in
    c) CFG="$OPTARG" ;;         # ansible.cfg to use, has a default
    f) PIP=false ;;             # force package manager install (defaults to pip in container)
-   h) HELP ;;                  # shows the help menu
-   H) HELP ;;                  # shows the help menu
    g) GIT="$OPTARG" ;;         # git roles
    G) GALAXY="$OPTARG" ;;      # galaxy roles to download
+   h) HELP ;;                  # shows the help menu
+   H) HELP ;;                  # shows the help menu
+   l) LOC="$LOC" ;;            # ansible files location
    p) PIP=true ;;              # pip install
    u) USERS="$OPTARG" ;;       # users to add to ansible group
    *) ;;
@@ -106,7 +111,7 @@ USERS=""
     while :; do
      case "$VER" in
       18.*|16.*|8|7)
-       printf "\n%s %s detected\n\nconfigured " "$OS" "$VER"
+       printf "\n%s %s %s detected\n\nconfigured " "$OS" "$VER" "$CONTAINER"
         if [ "$PIP" = true ]; then
          printf "for pip installation\n"
         else
@@ -117,22 +122,24 @@ USERS=""
     done
    break;;
     *)
-     printf "\n%s %s is not supported\n" "$OS" "$VER"
+     printf "\n%s %s %s is not supported\n" "$OS" "$VER" "$CONTAINER"
      exit 0
    ;;
   esac
  done
 
-# Update cache // install epel-release
+# Update cache // install epel-release (if not container)
  while :; do
   case "$OS" in
    ubuntu)
     printf "\nupdating apt cache\n"
-    apt-get update > /dev/null 2>&1
+    apt-get update #> /dev/null 2>&1
    break;;
    centos)
-    printf "\nInstalling epel-release\n"
-    yum install -y epel-release > /dev/null 2>&1
+    if [ "$PIP" != true ]; then
+     printf "\nInstalling epel-release\n"
+     yum install -y epel-release #> /dev/null 2>&1
+    fi
    break;;
   esac
  done
@@ -143,22 +150,22 @@ USERS=""
   while :; do
    case "$OS" in
     ubuntu)
-     apt-get install -y $APT > /dev/null 2>&1
+     apt-get install -y $APT #> /dev/null 2>&1
      printf "\nRemoving any old Ansible PPAs\n"
-     add-apt-repository -ry ppa:ansible/ansible > /dev/null 2>&1
+     add-apt-repository -ry ppa:ansible/ansible #> /dev/null 2>&1
      printf "\nAdding Ansible PPA\n"
-     add-apt-repository -y ppa:ansible/ansible > /dev/null 2>&1
+     add-apt-repository -y ppa:ansible/ansible #> /dev/null 2>&1
      printf "\nUpdating apt cache\n"
-     apt-get update > /dev/null 2>&1
+     apt-get update #> /dev/null 2>&1
      break;;
     centos)
      while :; do
       case "$VER" in
        8)
-        dnf install -y $YUM $DNF $PKGS > /dev/null 2>&1
+        dnf install -y $YUM $DNF $PKGS #> /dev/null 2>&1
        break;;
        7)
-        yum install -y $YUM $PKGS > /dev/null 2>&1
+        yum install -y $YUM $PKGS #> /dev/null 2>&1
        break;;
       esac
      done
@@ -170,16 +177,16 @@ USERS=""
   while :; do
    case "$OS" in
     ubuntu)
-     apt-get install --reinstall -y ansible > /dev/null 2>&1
+     apt-get install --reinstall -y ansible #> /dev/null 2>&1
     break;;
     centos)
      while :; do
       case "$VER" in
        8)
-        pip2 install --upgrade --force-reinstall ansible > /dev/null 2>&1
+        pip2 install --upgrade --force-reinstall ansible #> /dev/null 2>&1
        break;;
        7)
-        yum install -y ansible > /dev/null 2>&1
+        yum install -y ansible #> /dev/null 2>&1
        break;;
       esac
      done
@@ -273,14 +280,14 @@ USERS=""
  fi
 
 # Create missing directories
- printf "\nCreate any missing directories\n"
+ printf "\nCreating any missing directories\n"
  for DIR in $ANSI_FOLDERS;
    do
     mkdir -p "$LOC"/"$DIR"
  done
 
 # Create missing files
- printf "\nCreate any missing files\n"
+ printf "\nCreating any missing files\n"
  for FILE in $FILES;
    do
     touch "$FILE"
@@ -288,50 +295,55 @@ USERS=""
 
 # If the host is a container, modify ansible to run against localhost
  if [ "$PIP" = true ] && [ "$INODE_NUM" -gt '2' ] ; then
+   printf "\nAdding localhost entry to Ansible hosts file\n"
    printf "[local]\nlocalhost ansible_connection=local" > /etc/ansible/hosts
  fi
 
 # Make sure ansible.cfg exists under /etc/ansible
  if [ -z "$CFG" ]
   then
-   printf "\nNo ansible.cfg specified, skipping...\n"
+   printf "\nNo ansible.cfg specified, continuing...\n"
   else
    printf "\nBacking up current ansible.cfg\n"
    BACKUP=$(date '+%Y_%m_%d_%H_%M_%S')
    cp "$LOC"/ansible.cfg "$LOC"/ansible.cfg_"$BACKUP".bak
-   printf "\nFetching specified ansible.cfg\n"
-   curl "$CFG" -o "$LOC"/ansible.cfg > /dev/null 2>&1
+   printf "\nDownloading specified ansible.cfg\n"
+   curl "$CFG" -o "$LOC"/ansible.cfg #> /dev/null 2>&1
  fi
 
 # Download Ansible Galaxy roles if specified
  if [ -z "$GALAXY" ];
   then
-   printf "\nNo galaxy roles set, skipping...\n"
+   printf "\nNo galaxy roles set, continuing...\n"
   else
-   printf "\nFetching galaxy roles\n"
-   ansible-galaxy --roles-path "$LOC"/roles install "$GALAXY" > /dev/null 2>&1
+    printf "\nDownloading the following roles to %s/roles\n" "$LOC"
+    for galaxy_role in $GALAXY; do
+     ansible-galaxy install --roles-path "$LOC"/roles "$galaxy_role" #> /dev/null 2>&1
+     printf "\n - %s" "$galaxy_role"
+    done
+    printf "\n"
  fi
 
 # Download Ansible roles from git if specified
  if [ -z "$GIT" ]; then
-  printf "\nNo git roles set, skipping\n"
+  printf "\nNo git roles set, continuing\n"
  else
+  printf "\nInstalling git\n"
   while :; do
    case "$OS" in
     ubuntu)
-     printf "\nInstalling git\n"
-     apt-get install -y git > /dev/null 2>&1
-     printf "\nFetching roles from git\n"
-     git clone "$ROLE" "$LOC"/roles > /dev/null 2>&1
+     apt-get update
+     apt-get install -y git git-extras #> /dev/null 2>&1
      break;;
     centos)
-     printf "\nInstalling git\n"
-     yum install -y git > /dev/null 2>&1
-     printf "\nFetching roles from git\n"
-     git clone "$ROLE" "$LOC"/roles > /dev/null 2>&1
-     break;;
+     yum install -y git git-extras #> /dev/null 2>&1
    esac
   done
+  printf "\nDownloading the following roles to %s/roles\n" "$LOC"
+     cd "$LOC"/roles
+      for git_role in $GIT; do
+       git git-force-clone "$GIT" #> /dev/null 2>&1
+      done
  fi
 
 # Make sure group 'ansible' exists
@@ -345,14 +357,14 @@ USERS=""
 
 # Create any specified users
  if [ -z "$USERS" ]; then
-  printf "\nNo users specified, skipping...\n"
+  printf "\nNo users specified, continuing..."
  else
   for USER in $USERS;
    do
     if ! grep -q "$USER" /etc/passwd; then
-     useradd "$USER" > /dev/null 2>&1
-     printf "\nUser %s created" "$USER"
+     useradd "$USER" #> /dev/null 2>&1
      usermod -aG ansible "$USER"
+     printf "\n%s created" "$USER"
     else
      usermod -aG ansible "$USER"
     fi
@@ -360,7 +372,7 @@ USERS=""
  fi
 
 # Set the correct Read Write Execute rights on /etc/ansible
- printf "\nSetting Ansible permissions\n"
+ printf "\n\nSetting Ansible permissions on %s\n" "$LOC"
  chmod -R 774 "$LOC"
  chown -R root:ansible "$LOC"
  chmod g+s "$LOC"
@@ -369,13 +381,13 @@ USERS=""
  ENDTIME=$(date +%s)
  printf "\nFinished in %s seconds\n" "$((ENDTIME-STARTTIME))"
 
-# Exit message on successfull run
- if [ -z "$GALAXY" ] && [ -z "$GIT" ]; then
-  printf "\nDownload some roles to get started\n"
- else
-  printf "\nEnjoy\n"
- fi
-
 # Print out Ansible version
  ANSI_VER=$(ansible --version | head -n 1 | awk '{print $2}')
- printf "\nAnsible version %s is installed\n\n" "$ANSI_VER"
+ printf "\nAnsible version %s is installed\n" "$ANSI_VER"
+
+# Exit message on successfull run
+ if [ -z "$GALAXY" ] && [ -z "$GIT" ]; then
+  printf "\nDownload some roles to get started\n\n"
+ else
+  printf "\nEnjoy\n\n"
+ fi
