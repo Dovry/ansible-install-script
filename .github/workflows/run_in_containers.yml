@@ -5,22 +5,19 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        pipc: ["ubuntu:16.04", "ubuntu:18.04", "centos:7", "centos:8"]
-        pkgc: ["ubuntu:16.04", "ubuntu:18.04", "centos:7", "centos:8"]
+        container: ["ubuntu:16.04", "ubuntu:18.04", "centos:7", "centos:8"]
     steps:
     - uses: actions/checkout@v1
 
     - name: Allow execute on script
       run: chmod +x ansible_convenience_script.sh
 
-    - name: run pip container
-      run: "docker run -d -it --name pip-container -v $(pwd):/home/script ${{ matrix.pipc }}"
-
-    - name: run pip version of script in container
-      run: docker exec pip-container /bin/bash -v /home/script/ansible_convenience_script.sh -p
+    - name: run in pip container
+      run: |
+      "docker run -d -it --name pip-container -v $(pwd):/home/script ${{ matrix.container }}"
+      docker exec pip-container /bin/bash -v /home/script/ansible_convenience_script.sh -p
 
     - name: run package manager container
-      run: "docker run -d -it --name pkg-container -v $(pwd):/home/script ${{ matrix.pkgc }}"
-
-    - name: run package manager version of script in container
-      run: docker exec pkg-container /bin/bash -v /home/script/ansible_convenience_script.sh -P
+      run: |
+      "docker run -d -it --name pkg-container -v $(pwd):/home/script ${{ matrix.container }}"
+      docker exec pkg-container /bin/bash -v /home/script/ansible_convenience_script.sh -P
