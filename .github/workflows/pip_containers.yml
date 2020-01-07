@@ -1,4 +1,4 @@
-name: Run in containers
+name: PIP containers
 on: [push]
 jobs:
   build:
