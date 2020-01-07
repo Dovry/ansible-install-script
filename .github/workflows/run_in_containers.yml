@@ -12,8 +12,14 @@ jobs:
     - name: Allow execute on script
       run: chmod +x ansible_convenience_script.sh
 
-    - name: run container
-      run: "docker run -d -it --name test-container -v $(pwd):/home/script ${{ matrix.container }}"
+    - name: run pip container
+      run: "docker run -d -it --name pip-container -v $(pwd):/home/script ${{ matrix.container }}"
 
-    - name: run script in container
-      run: docker exec test-container /bin/bash -v /home/script/ansible_convenience_script.sh
+    - name: run pip version of script in container
+      run: docker exec test-container /bin/bash -v /home/script/ansible_convenience_script.sh -p
+
+    - name: run package manager container
+      run: "docker run -d -it --name pkg-container -v $(pwd):/home/script ${{ matrix.container }}"
+
+    - name: run package manager version of script in container
+      run: docker exec test-container /bin/bash -v /home/script/ansible_convenience_script.sh -P
