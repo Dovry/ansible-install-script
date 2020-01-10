@@ -1,18 +1,18 @@
-name: PIP containers
-on: [push]
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        container: ["ubuntu:16.04", "ubuntu:18.04", "centos:7", "centos:8"]
-    steps:
-    - uses: actions/checkout@v1
-
-    - name: Allow execute on script
-      run: chmod +x ansible_convenience_script.sh
-
-    - name: run in pip container
-      run: |
-        docker run -d -it --name pip-container -v "$(pwd)":/home/script "${{ matrix.container }}"
-        docker exec pip-container /bin/bash -v /home/script/ansible_convenience_script.sh -p
+#name: PIP containers
+#on: [push]
+#jobs:
+#  build:
+#    runs-on: ubuntu-latest
+#    strategy:
+#      matrix:
+#        container: ["ubuntu:16.04", "ubuntu:18.04", "centos:7", "centos:8"]
+#    steps:
+#    - uses: actions/checkout@v1
+#
+#    - name: Allow execute on script
+#      run: chmod +x ansible_convenience_script.sh
+#
+#    - name: run in pip container
+#      run: |
+#        docker run -d -it --name pip-container -v "$(pwd)":/home/script "${{ matrix.container }}"
+#        docker exec pip-container /bin/bash -v /home/script/ansible_convenience_script.sh -p
