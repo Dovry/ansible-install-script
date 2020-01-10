@@ -1,0 +1,51 @@
+name: PKG containers
+
+on: [push]
+
+jobs:
+  pip:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        container: ["ubuntu:16.04", "ubuntu:18.04", "centos:7", "centos:8"]
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Allow execute on script
+      run: chmod +x ansible_convenience_script.sh
+
+    - name: run package manager container
+      run: |
+        docker run -d -it --name pkg-container -v "$(pwd)":/home/script "${{ matrix.container }}"
+        docker exec pkg-container /bin/bash -v /home/script/ansible_convenience_script.sh -P
+
+  pkg:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        container: ["ubuntu:16.04", "ubuntu:18.04", "centos:7", "centos:8"]
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Allow execute on script
+      run: chmod +x ansible_convenience_script.sh
+
+    - name: run in pip container
+      run: |
+        docker run -d -it --name pip-container -v "$(pwd)":/home/script "${{ matrix.container }}"
+        docker exec pip-container /bin/bash -v /home/script/ansible_convenience_script.sh -p
+ 
+  build_docker_image:
+    needs: [pip, pkg]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        repo: ["centos7", "centos8", "ubuntu18", "ubuntu16"]
+    steps:
+
+      - name: Dispatch initiating repository event
+        run: |
+          curl -X POST https://api.github.com/repos/marcnuri-demo/actions-remote-dispatch-b/dispatches \
+          -H 'Accept: application/vnd.github.everest-preview+json' \
+          -u ${{ secrets.ACCESS_TOKEN }} \
+          --data '{"event_type": "ping", "client_payload": { "repository": dovry/docker_"${{ matrix.repo }}"_ansible }}'
