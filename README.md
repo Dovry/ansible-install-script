@@ -32,9 +32,16 @@ sudo ./ansible_convenience_script.sh
 **Arguments**:
 
 ```bash
--h, --help     Shows this help menu
--p,            Install Ansible via python pip
--x,            Force normal installation in a container
+Options:
+
+  -c,         Specify a url to an ansible.cfg file to download
+  -g,         Git role to download
+  -G,         Galaxy role to download
+  -h, -H,     Shows this help menu
+  -l,         Location where Ansible files are placed, default is /etc/ansible
+  -p,         Force pip installation
+  -P,         Force package manager installation
+  -u,         Creates, or adds an existing user to the group 'ansible'
 ```
 
 **Optional** variables:
@@ -48,6 +55,6 @@ GIT=""
 GALAXY=""
 # Space seperated list of users to add to the 'ansible' group
 USERS=""
-# Space seperated pip packages to install
-PYPKG=""
 ```
+
+examples are included at the top of the script
