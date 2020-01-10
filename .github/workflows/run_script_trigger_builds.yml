@@ -35,7 +35,7 @@ jobs:
         docker run -d -it --name pip-container -v "$(pwd)":/home/script "${{ matrix.container }}"
         docker exec pip-container /bin/bash -v /home/script/ansible_convenience_script.sh -P
  
-  build_docker_image:
+  trigger_docker_repo_dispatch:
     needs: [pip, pkg]
     runs-on: ubuntu-latest
     strategy:
@@ -45,7 +45,8 @@ jobs:
 
       - name: Dispatch initiating repository event
         run: |
-          curl -X POST https://api.github.com/repos/marcnuri-demo/actions-remote-dispatch-b/dispatches \
-          -H 'Accept: application/vnd.github.everest-preview+json' \
+          curl -XPOST \
           -u ${{ secrets.ACCESS_TOKEN }} \
-          --data '{"event_type": "ping", "client_payload": { "repository": "'"dovry/docker_"${{ matrix.repo }}"_ansible"'"" }}'
+          -H "Accept: application/vnd.github.everest-preview+json" \
+          -H "Content-Type: application/json" https://api.github.com/repos/dovry/docker_${{ matrix.repo }}_ansible/dispatches \
+          --data '{"event_type": "build_application"}'
