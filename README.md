@@ -8,11 +8,10 @@
 
 ### Tested and works
 
-* ![Build Status](https://github.com/dovry/docker_ubuntu18_ansible/workflows/Basic%20build%20and%20push%20to%20Docker%20hub/badge.svg)
-* ![Build Status](https://github.com/dovry/docker_ubuntu16_ansible/workflows/Basic%20build%20and%20push%20to%20Docker%20hub/badge.svg)
-* ![Build Status](https://github.com/dovry/docker_centos8_ansible/workflows/Basic%20build%20and%20push%20to%20Docker%20hub/badge.svg)
-* ![Build Status](https://github.com/dovry/docker_centos7_ansible/workflows/Basic%20build%20and%20push%20to%20Docker%20hub/badge.svg)
-
+* ![Build Status](https://github.com/dovry/docker_ubuntu18_ansible/workflows/Basic%20build%20and%20push%20to%20Docker%20hub/badge.svg) - [Ubuntu 18.04](https://github.com/dovry/docker_ubuntu18_ansible)
+* ![Build Status](https://github.com/dovry/docker_ubuntu16_ansible/workflows/Basic%20build%20and%20push%20to%20Docker%20hub/badge.svg) - [Ubuntu 16.04](https://github.com/dovry/docker_ubuntu16_ansible)
+* ![Build Status](https://github.com/dovry/docker_centos8_ansible/workflows/Basic%20build%20and%20push%20to%20Docker%20hub/badge.svg) - [Centos 8](https://github.com/dovry/docker_centos8_ansible)
+* ![Build Status](https://github.com/dovry/docker_centos7_ansible/workflows/Basic%20build%20and%20push%20to%20Docker%20hub/badge.svg) - [Centos 7](https://github.com/dovry/docker_centos7_ansible)
 
 ### Untested, but might work
 
