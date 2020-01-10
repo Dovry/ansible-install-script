@@ -1,4 +1,4 @@
-name: PKG containers
+name: build_and_trigger
 
 on: [push]
 
