@@ -8,17 +8,29 @@
 
 ### Tested and works
 
-* ![Build Status](https://github.com/dovry/docker_ubuntu18_ansible/workflows/Basic%20build%20and%20push%20to%20Docker%20hub/badge.svg) - [Ubuntu 18.04](https://github.com/dovry/docker_ubuntu18_ansible)
-* ![Build Status](https://github.com/dovry/docker_ubuntu16_ansible/workflows/Basic%20build%20and%20push%20to%20Docker%20hub/badge.svg) - [Ubuntu 16.04](https://github.com/dovry/docker_ubuntu16_ansible)
-* ![Build Status](https://github.com/dovry/docker_centos8_ansible/workflows/Basic%20build%20and%20push%20to%20Docker%20hub/badge.svg) - [Centos 8](https://github.com/dovry/docker_centos8_ansible)
-* ![Build Status](https://github.com/dovry/docker_centos7_ansible/workflows/Basic%20build%20and%20push%20to%20Docker%20hub/badge.svg) - [Centos 7](https://github.com/dovry/docker_centos7_ansible)
+#### [Ubuntu 18.04](https://github.com/dovry/docker_ubuntu18_ansible)
 
-### Untested, but might work
+![Build Status](https://github.com/dovry/docker_ubuntu18_ansible/workflows/Basic%20build%20and%20push%20to%20Docker%20hub/badge.svg) 
 
-* Ubuntu 16.10
-* Ubuntu 18.10
-* Ubuntu 19.04
-* Ubuntu 19.10
+![Docker Pulls](https://img.shields.io/docker/pulls/dovry/docker_ubuntu18_ansible)
+ 
+#### [Ubuntu 16.04](https://github.com/dovry/docker_ubuntu16_ansible)
+
+![Build Status](https://github.com/dovry/docker_ubuntu16_ansible/workflows/Basic%20build%20and%20push%20to%20Docker%20hub/badge.svg)
+
+![Docker Pulls](https://img.shields.io/docker/pulls/dovry/docker_ubuntu16_ansible)
+
+#### [Centos 8](https://github.com/dovry/docker_centos8_ansible)
+
+![Build Status](https://github.com/dovry/docker_centos8_ansible/workflows/Basic%20build%20and%20push%20to%20Docker%20hub/badge.svg)
+
+![Docker Pulls](https://img.shields.io/docker/pulls/dovry/docker_centos8_ansible)
+
+#### [Centos 7](https://github.com/dovry/docker_centos7_ansible)
+
+![Build Status](https://github.com/dovry/docker_centos7_ansible/workflows/Basic%20build%20and%20push%20to%20Docker%20hub/badge.svg)
+
+![Docker Pulls](https://img.shields.io/docker/pulls/dovry/docker_centos7_ansible)
 
 ## How to use this script
 
@@ -31,7 +43,7 @@ sudo ./ansible_convenience_script.sh
 
 **Arguments**:
 
-```bash
+```shell
 Options:
 
   -c,         Specify a url to an ansible.cfg file to download
