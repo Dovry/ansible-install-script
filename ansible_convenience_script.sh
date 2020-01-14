@@ -68,16 +68,16 @@ USERS=""
   exit 0
  }
 
-# Check for distribution
- OS="$(sed -n '/^ID=/p' /etc/*release | sed 's/ID=//g;s/"//g')"
-# Check for distribution version
- VER="$(sed -n '/VERSION_ID=/p' /etc/*release | sed 's/VERSION_ID=//g;s/"//g')"
-
 # Exit if not run as root
  if [ "$(whoami)" != 'root' ]; then
   printf "\nThis script must be run with sudo or as root\n"
   exit 1
  fi
+
+# Check for distribution
+ OS="$(sed -n '/^ID=/p' /etc/*release | sed 's/ID=//g;s/"//g')"
+# Check for distribution version
+ VER="$(sed -n '/VERSION_ID=/p' /etc/*release | sed 's/VERSION_ID=//g;s/"//g')"
 
 # Check if running in container
  INODE_NUM=$(stat / | awk '/Inode/ {print $4}')

@@ -22,9 +22,9 @@
 
 ## How to use this script
 
+Download this repo, cd into the folder, then:
+
 ```shell
-git clone git@git.evry.cloud:cloudascore-ansible-roles/ansible_sh.git
-cd ansible_sh
 chmod +x ansible_convenience_script.sh
 sudo ./ansible_convenience_script.sh
 ```
