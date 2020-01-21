@@ -34,7 +34,7 @@
 
 ## How to use this script
 
-Download this repo, cd into the folder, then:
+Download the script, then:
 
 ```shell
 chmod +x ansible_convenience_script.sh
