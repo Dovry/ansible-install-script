@@ -97,17 +97,17 @@ USERS=""
  fi
 
 # Options
- while getopts 'c:hHg:G:l:pPu:' option; do
+ while getopts 'c:g:G:hHl:pPu:' option; do
   case $option in
-   c) CFG="$OPTARG" ;;         # ansible.cfg to use, has a default
-   g) GIT="$OPTARG" ;;         # git roles
-   G) GALAXY="$OPTARG" ;;      # galaxy roles to download
-   h) HELP ;;                  # shows the help menu
-   H) HELP ;;                  # shows the help menu
-   l) LOC="$LOC" ;;            # ansible files location
-   p) PIP=true ;;              # pip install
-   P) PIP=false ;;             # force package manager install (defaults to pip in container)
-   u) USERS="$OPTARG" ;;       # users to add to ansible group
+   c) CFG="$OPTARG" ;;                               # ansible.cfg to use, has a default
+   g) GIT="$OPTARG" ;;                               # git roles
+   G) GALAXY="$OPTARG" ;;                            # galaxy roles to download
+   h) HELP ;;                                        # shows the help menu
+   H) HELP ;;                                        # shows the help menu
+   l) LOC="$LOC" ;;                                  # ansible files location
+   p) PIP=true; INSTALLATION="pip" ;;                # pip install
+   P) PIP=false; INSTALLATION="package manager" ;;   # force package manager install (defaults to pip in container)
+   u) USERS="$OPTARG" ;;                             # users to add to ansible group
    *) ;;
   esac
  done
@@ -119,13 +119,8 @@ USERS=""
     while :; do
      case "$VER" in
       18.*|16.*|8|7)
-       printf "\n%s %s %s detected\n\nconfigured " "$OS" "$VER" "$CONTAINER"
-        if [ "$PIP" = true ]; then
-         printf "for pip installation\n"
-        else
-         printf "for package manager installation\n"
-        fi
-        break;;
+       printf "\n%s %s %s detected\n\nconfigured for %s installation" "$OS" "$VER" "$CONTAINER" "$INSTALLATION"
+      break;;
      esac
     done
    break;;
@@ -144,10 +139,8 @@ USERS=""
     apt-get update > /dev/null 2>&1
    break;;
    centos)
-    #if [ "$PIP" != true ]; then
      printf "\nInstalling epel-release\n"
      yum install -y epel-release > /dev/null 2>&1
-    #fi
    break;;
   esac
  done
