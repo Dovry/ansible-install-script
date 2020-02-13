@@ -1,4 +1,4 @@
-name: build_and_trigger
+name: py3_build_and_trigger
 
 on: 
   push:
