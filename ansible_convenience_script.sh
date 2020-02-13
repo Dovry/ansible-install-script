@@ -22,16 +22,17 @@ USERS=""
  ANSI_FOLDERS="facts files inventory playbooks plugins roles inventory/group_vars inventory/host_vars"
  FILES="$LOC/inventory/hosts $LOC/hosts $LOC/ansible.cfg"
 
-# Package manager dependencies
+# Package manager packages
  PKGS="gcc curl sshpass"
  YUM="python2-pip kernel-devel gcc-c++ libxslt-devel libffi-devel openssl-devel"
  DNF="redhat-rpm-config"
- APT="software-properties-common python-pip python-dev libkrb5-dev"
+ APT="software-properties-common"
+ PIP3="python3 python3-pip"
 
-# Container dependencies
+# Container packages
  PIP_ANSI="ansible"
  C_CENT="sudo which initscripts"
- C_CENT8="python3 python3-pip hostname"
+ C_CENT8="hostname"
  C_CENT7="deltarpm python-pip"
  C_UBU="locales software-properties-common curl python-setuptools sudo wget rsyslog systemd systemd-cron sudo iproute2"
  C_UBU18="apt-utils"
@@ -97,7 +98,7 @@ USERS=""
  fi
 
 # Options
- while getopts 'c:g:G:hHl:pPu:' option; do
+ while getopts 'c:g:G:hHl:pPu:2:3:' option; do
   case $option in
    c) CFG="$OPTARG" ;;                               # ansible.cfg to use, has a default
    g) GIT="$OPTARG" ;;                               # git roles
@@ -205,7 +206,7 @@ USERS=""
      while :; do
       case "$VER" in
        18.*)
-        # Prepare image for Ansible install
+        # Prepare OS for Ansible install
         apt-get -y --no-install-recommends install $C_UBU $C_UBU18 $GIT_PKG
         locale-gen en_US.UTF-8
         sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
@@ -220,7 +221,7 @@ USERS=""
         find / -name '*__pycache__*' -delete
        break;;
        16.*)
-        # Prepare image for Ansible install
+        # Prepare OS for Ansible install
         apt-get -y --no-install-recommends install $C_UBU $C_UBU16 $GIT_PKG
         locale-gen en_US.UTF-8
         sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
@@ -244,8 +245,7 @@ USERS=""
        8)
         yum makecache --timer
         yum -y update
-        yum -y install $C_CENT $C_CENT8 $GIT_PKG
-        #yum -y install $C_CENT8
+        yum -y install $C_CENT $C_CENT8 $PIP3 $GIT_PKG
         yum clean all
         # If container, install Systemd
         if [ "$INODE_NUM" -gt '2' ]; then
@@ -261,7 +261,6 @@ USERS=""
         yum makecache fast
         yum -y update
         yum -y install $C_CENT $C_CENT7 $GIT_PKG
-        #yum -y install $C_CENT
         yum clean all
         # If container, install Systemd
         if [ "$INODE_NUM" -gt '2' ]; then

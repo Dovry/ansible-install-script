@@ -1,0 +1,39 @@
+name: build_and_trigger
+
+on: 
+  push:
+    branches:
+      - py3
+
+jobs:
+  pip:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        container: ["ubuntu:16.04", "ubuntu:18.04", "centos:7", "centos:8"]
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Allow execute on script
+      run: chmod +x ansible_convenience_script.sh
+
+    - name: run pip container
+      run: |
+        docker run -d -it --name pkg-container -v "$(pwd)":/home/script "${{ matrix.container }}"
+        docker exec pkg-container /bin/bash -v /home/script/ansible_convenience_script.sh -p
+
+  pkg:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        container: ["ubuntu:16.04", "ubuntu:18.04", "centos:7", "centos:8"]
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Allow execute on script
+      run: chmod +x ansible_convenience_script.sh
+
+    - name: run package manager container
+      run: |
+        docker run -d -it --name pip-container -v "$(pwd)":/home/script "${{ matrix.container }}"
+        docker exec pip-container /bin/bash -v /home/script/ansible_convenience_script.sh -P
