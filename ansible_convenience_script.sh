@@ -34,7 +34,7 @@ USERS=""
  C_CENT="sudo which initscripts"
  C_CENT8="hostname"
  C_CENT7="deltarpm python-pip"
- C_APT="locales python-setuptools sudo wget rsyslog systemd systemd-cron sudo iproute2"
+ C_APT="locales sudo wget rsyslog systemd systemd-cron sudo iproute2"
  C_UBU18="apt-utils"
  C_UBU16="python-software-properties libssl-dev"
 
