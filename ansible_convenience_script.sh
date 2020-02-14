@@ -22,21 +22,21 @@ USERS=""
  ANSI_FOLDERS="facts files inventory playbooks plugins roles inventory/group_vars inventory/host_vars"
  FILES="$LOC/inventory/hosts $LOC/hosts $LOC/ansible.cfg"
 
-# Package manager packages
+# Packages
  PKGS="gcc curl sshpass"
- YUM="python2-pip kernel-devel gcc-c++ libxslt-devel libffi-devel openssl-devel"
- DNF="redhat-rpm-config"
  APT="software-properties-common"
+ DNF="redhat-rpm-config"
+ YUM="python2-pip kernel-devel gcc-c++ libxslt-devel libffi-devel openssl-devel"
  PIP3="python3 python3-pip"
 
-# Container packages
- PIP_ANSI="ansible"
+# Container-specific packages
+ ANSIBLE="ansible"
  C_CENT="sudo which initscripts"
  C_CENT8="hostname"
  C_CENT7="deltarpm python-pip"
- C_UBU="locales software-properties-common curl python-setuptools sudo wget rsyslog systemd systemd-cron sudo iproute2"
+ C_APT="locales python-setuptools sudo wget rsyslog systemd systemd-cron sudo iproute2"
  C_UBU18="apt-utils"
- C_UBU16="python-software-properties"
+ C_UBU16="python-software-properties libssl-dev"
 
 # Install systemd function - Required to run Ansible against localhost in containers
  SYSD () { 
@@ -179,16 +179,16 @@ USERS=""
   while :; do
    case "$OS" in
     ubuntu)
-     apt-get install --reinstall -y ansible > /dev/null 2>&1
+     apt-get install --reinstall -y $ANSIBLE > /dev/null 2>&1
     break;;
     centos)
      while :; do
       case "$VER" in
        8)
-        pip2 install --upgrade --force-reinstall ansible > /dev/null 2>&1
+        pip2 install --upgrade --force-reinstall $ANSIBLE > /dev/null 2>&1
        break;;
        7)
-        yum install -y ansible > /dev/null 2>&1
+        yum install -y $ANSIBLE > /dev/null 2>&1
        break;;
       esac
      done
@@ -207,31 +207,25 @@ USERS=""
       case "$VER" in
        18.*)
         # Prepare OS for Ansible install
-        apt-get -y --no-install-recommends install $C_UBU $C_UBU18 $GIT_PKG
+        apt-get -y --no-install-recommends install $APT $C_APT $C_UBU18 $GIT_PKG $PIP3
         locale-gen en_US.UTF-8
         sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
-        # Download and install pip
-        wget -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py
-        python /tmp/get-pip.py
         # Install Ansible
-        pip install --disable-pip-version-check --upgrade --force-reinstall $PIP_ANSI
+        pip3 install --disable-pip-version-check --upgrade --force-reinstall $ANSIBLE
         # Cleanup
-        rm -Rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man /root/.cache/pip/ /tmp/get-pip.py
+        rm -Rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man /root/.cache/pip/
         find / -name '*.pyc' -delete
         find / -name '*__pycache__*' -delete
        break;;
        16.*)
         # Prepare OS for Ansible install
-        apt-get -y --no-install-recommends install $C_UBU $C_UBU16 $GIT_PKG
+        apt-get -y --no-install-recommends install $APT $C_APT $C_UBU16 $GIT_PKG $PIP3
         locale-gen en_US.UTF-8
         sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
-        # Download and install pip
-        wget -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py
-        python /tmp/get-pip.py
         # Install Ansible
-        pip install --disable-pip-version-check --upgrade --force-reinstall $PIP_ANSI
+        pip3 install --disable-pip-version-check --upgrade --force-reinstall $ANSIBLE
         # Cleanup
-        rm -Rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man /tmp/get-pip.py
+        rm -Rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man
         find / -name '*.pyc' -delete
         find / -name '*__pycache__*' -delete
         apt-get clean
@@ -253,7 +247,7 @@ USERS=""
           SYSD
         fi
         # Install Ansible
-        pip3 install $PIP_ANSI
+        pip3 install $ANSIBLE
         # Disable requiretty
         sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/' /etc/sudoers
        break;;
