@@ -98,7 +98,7 @@ USERS=""
  fi
 
 # Options
- while getopts 'c:g:G:hHl:pPu:2:3:' option; do
+ while getopts 'c:g:G:hHl:pPu:' option; do
   case $option in
    c) CFG="$OPTARG" ;;                               # ansible.cfg to use, has a default
    g) GIT="$OPTARG" ;;                               # git roles
