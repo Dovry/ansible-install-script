@@ -22,20 +22,21 @@ USERS=""
  ANSI_FOLDERS="facts files inventory playbooks plugins roles inventory/group_vars inventory/host_vars"
  FILES="$LOC/inventory/hosts $LOC/hosts $LOC/ansible.cfg"
 
-# Package manager dependencies
+# Packages
  PKGS="gcc curl sshpass"
- YUM="python2-pip kernel-devel gcc-c++ libxslt-devel libffi-devel openssl-devel"
+ APT="software-properties-common"
  DNF="redhat-rpm-config"
- APT="software-properties-common python-pip python-dev libkrb5-dev"
+ YUM="python2-pip kernel-devel gcc-c++ libxslt-devel libffi-devel openssl-devel"
+ PY3="python3 python3-setuptools"
 
-# Container dependencies
- PIP_ANSI="ansible"
+# Container-specific packages
+ ANSIBLE="ansible"
  C_CENT="sudo which initscripts"
- C_CENT8="python3 python3-pip hostname"
+ C_CENT8="hostname"
  C_CENT7="deltarpm python-pip"
- C_UBU="locales software-properties-common curl python-setuptools sudo wget rsyslog systemd systemd-cron sudo iproute2"
+ C_APT="locales sudo wget rsyslog systemd systemd-cron sudo iproute2"
  C_UBU18="apt-utils"
- C_UBU16="python-software-properties"
+ C_UBU16="python-software-properties libssl-dev"
 
 # Install systemd function - Required to run Ansible against localhost in containers
  SYSD () { 
@@ -84,9 +85,11 @@ USERS=""
  if [ "$INODE_NUM" -gt '2' ]; then
   PIP=true
   CONTAINER="container" # used for script output
+  INSTALLATION="pip"
  else
   PIP=""
   CONTAINER="" # used for script output
+  INSTALLATION="package manager"
  fi
 
  # Check if git should be installed
@@ -163,7 +166,7 @@ USERS=""
      while :; do
       case "$VER" in
        8)
-        dnf install -y $YUM $DNF $PKGS $GIT_PKG > /dev/null 2>&1
+        dnf install -y $YUM $DNF $PKGS $GIT_PKG $PY3 > /dev/null 2>&1
        break;;
        7)
         yum install -y $YUM $PKGS $GIT_PKG > /dev/null 2>&1
@@ -178,16 +181,18 @@ USERS=""
   while :; do
    case "$OS" in
     ubuntu)
-     apt-get install --reinstall -y ansible > /dev/null 2>&1
+     apt-get install --reinstall -y $ANSIBLE > /dev/null 2>&1
     break;;
     centos)
      while :; do
       case "$VER" in
        8)
-        pip2 install --upgrade --force-reinstall ansible > /dev/null 2>&1
+        # Install pip
+        wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
+        pip3 install --upgrade --force-reinstall $ANSIBLE > /dev/null 2>&1
        break;;
        7)
-        yum install -y ansible > /dev/null 2>&1
+        yum install -y $ANSIBLE > /dev/null 2>&1
        break;;
       esac
      done
@@ -205,32 +210,30 @@ USERS=""
      while :; do
       case "$VER" in
        18.*)
-        # Prepare image for Ansible install
-        apt-get -y --no-install-recommends install $C_UBU $C_UBU18 $GIT_PKG
+        # Prepare OS for Ansible install
+        apt-get -y --no-install-recommends install $PKGS $APT $C_APT $C_UBU18 $GIT_PKG $PY3
         locale-gen en_US.UTF-8
         sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
-        # Download and install pip
-        wget -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py
-        python /tmp/get-pip.py
+        # Install pip
+        wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
         # Install Ansible
-        pip install --disable-pip-version-check --upgrade --force-reinstall $PIP_ANSI
+        pip3 install --disable-pip-version-check --upgrade --force-reinstall $ANSIBLE
         # Cleanup
-        rm -Rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man /root/.cache/pip/ /tmp/get-pip.py
+        rm -Rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man /root/.cache/pip/
         find / -name '*.pyc' -delete
         find / -name '*__pycache__*' -delete
        break;;
        16.*)
-        # Prepare image for Ansible install
-        apt-get -y --no-install-recommends install $C_UBU $C_UBU16 $GIT_PKG
+        # Prepare OS for Ansible install
+        apt-get -y install $PKGS $APT $C_APT $C_UBU16 $GIT_PKG $PY3 #$PY3
         locale-gen en_US.UTF-8
         sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
-        # Download and install pip
-        wget -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py
-        python /tmp/get-pip.py
+        # Install pip
+        wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
         # Install Ansible
-        pip install --disable-pip-version-check --upgrade --force-reinstall $PIP_ANSI
+        pip3 install --disable-pip-version-check --upgrade --force-reinstall $ANSIBLE
         # Cleanup
-        rm -Rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man /tmp/get-pip.py
+        rm -Rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man
         find / -name '*.pyc' -delete
         find / -name '*__pycache__*' -delete
         apt-get clean
@@ -244,8 +247,9 @@ USERS=""
        8)
         yum makecache --timer
         yum -y update
-        yum -y install $C_CENT $C_CENT8 $GIT_PKG
-        #yum -y install $C_CENT8
+        yum -y install $C_CENT $C_CENT8 $PY3 $GIT_PKG
+        # Install pip
+        wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
         yum clean all
         # If container, install Systemd
         if [ "$INODE_NUM" -gt '2' ]; then
@@ -253,15 +257,16 @@ USERS=""
           SYSD
         fi
         # Install Ansible
-        pip3 install $PIP_ANSI
+        pip3 install $ANSIBLE
         # Disable requiretty
         sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/' /etc/sudoers
        break;;
        7)
         yum makecache fast
         yum -y update
-        yum -y install $C_CENT $C_CENT7 $GIT_PKG
-        #yum -y install $C_CENT
+        yum -y install $C_CENT $C_CENT7 $GIT_PKG $PY3
+        # Install pip
+        wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
         yum clean all
         # If container, install Systemd
         if [ "$INODE_NUM" -gt '2' ]; then
@@ -269,7 +274,7 @@ USERS=""
         SYSD
         fi
         # Install Ansible
-        pip install ansible
+        pip3 install ansible
         # Disable requiretty
         sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/' /etc/sudoers
        break;;
