@@ -85,9 +85,11 @@ USERS=""
  if [ "$INODE_NUM" -gt '2' ]; then
   PIP=true
   CONTAINER="container" # used for script output
+  INSTALLATION="pip"
  else
   PIP=""
   CONTAINER="" # used for script output
+  INSTALLATION="package manager"
  fi
 
  # Check if git should be installed
