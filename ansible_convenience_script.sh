@@ -27,7 +27,7 @@ USERS=""
  APT="software-properties-common"
  DNF="redhat-rpm-config"
  YUM="python2-pip kernel-devel gcc-c++ libxslt-devel libffi-devel openssl-devel"
- PIP3="python3 python3-pip"
+ PIP3="python3 python3-pip python3-setuptools"
 
 # Container-specific packages
  ANSIBLE="ansible"
