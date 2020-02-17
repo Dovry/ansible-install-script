@@ -27,7 +27,7 @@ USERS=""
  APT="software-properties-common"
  DNF="redhat-rpm-config"
  YUM="python2-pip kernel-devel gcc-c++ libxslt-devel libffi-devel openssl-devel"
- PIP3="python3 python3-pip python3-setuptools"
+ PY3="python3 python3-setuptools"
 
 # Container-specific packages
  ANSIBLE="ansible"
@@ -209,9 +209,11 @@ USERS=""
       case "$VER" in
        18.*)
         # Prepare OS for Ansible install
-        apt-get -y --no-install-recommends install $PKGS $APT $C_APT $C_UBU18 $GIT_PKG $PIP3
+        apt-get -y --no-install-recommends install $PKGS $APT $C_APT $C_UBU18 $GIT_PKG $PY3
         locale-gen en_US.UTF-8
         sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
+        # Install pip
+        wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
         # Install Ansible
         pip3 install --disable-pip-version-check --upgrade --force-reinstall $ANSIBLE
         # Cleanup
@@ -221,10 +223,10 @@ USERS=""
        break;;
        16.*)
         # Prepare OS for Ansible install
-        apt-get -y install python3
+        apt-get -y install $PKGS $APT $C_APT $C_UBU16 $GIT_PKG $PY3 #$PY3
         locale-gen en_US.UTF-8
         sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
-        # Download and install pip
+        # Install pip
         wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
         # Install Ansible
         pip3 install --disable-pip-version-check --upgrade --force-reinstall $ANSIBLE
@@ -243,7 +245,9 @@ USERS=""
        8)
         yum makecache --timer
         yum -y update
-        yum -y install $C_CENT $C_CENT8 $PIP3 $GIT_PKG
+        yum -y install $C_CENT $C_CENT8 $PY3 $GIT_PKG
+        # Install pip
+        wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
         yum clean all
         # If container, install Systemd
         if [ "$INODE_NUM" -gt '2' ]; then
@@ -258,7 +262,9 @@ USERS=""
        7)
         yum makecache fast
         yum -y update
-        yum -y install $C_CENT $C_CENT7 $GIT_PKG
+        yum -y install $C_CENT $C_CENT7 $GIT_PKG $PY3
+        # Install pip
+        wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
         yum clean all
         # If container, install Systemd
         if [ "$INODE_NUM" -gt '2' ]; then
@@ -266,7 +272,7 @@ USERS=""
         SYSD
         fi
         # Install Ansible
-        pip install ansible
+        pip3 install ansible
         # Disable requiretty
         sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/' /etc/sudoers
        break;;
