@@ -209,7 +209,7 @@ USERS=""
       case "$VER" in
        18.*)
         # Prepare OS for Ansible install
-        apt-get -y --no-install-recommends install $APT $C_APT $C_UBU18 $GIT_PKG $PIP3
+        apt-get -y --no-install-recommends install $PKGS $APT $C_APT $C_UBU18 $GIT_PKG $PIP3
         locale-gen en_US.UTF-8
         sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
         # Install Ansible
@@ -221,9 +221,11 @@ USERS=""
        break;;
        16.*)
         # Prepare OS for Ansible install
-        apt-get -y --no-install-recommends install $APT $C_APT $C_UBU16 $GIT_PKG $PIP3
+        apt-get -y install python3
         locale-gen en_US.UTF-8
         sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
+        # Download and install pip
+        wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
         # Install Ansible
         pip3 install --disable-pip-version-check --upgrade --force-reinstall $ANSIBLE
         # Cleanup
