@@ -166,7 +166,7 @@ USERS=""
      while :; do
       case "$VER" in
        8)
-        dnf install -y $YUM $DNF $PKGS $GIT_PKG > /dev/null 2>&1
+        dnf install -y $YUM $DNF $PKGS $GIT_PKG $PY3 > /dev/null 2>&1
        break;;
        7)
         yum install -y $YUM $PKGS $GIT_PKG > /dev/null 2>&1
@@ -187,7 +187,9 @@ USERS=""
      while :; do
       case "$VER" in
        8)
-        pip2 install --upgrade --force-reinstall $ANSIBLE > /dev/null 2>&1
+        # Install pip
+        wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
+        pip3 install --upgrade --force-reinstall $ANSIBLE > /dev/null 2>&1
        break;;
        7)
         yum install -y $ANSIBLE > /dev/null 2>&1
