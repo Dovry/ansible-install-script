@@ -370,7 +370,7 @@ USERS=""
  printf "\n\nSetting Ansible permissions on %s\n" "$LOC"
  chmod -R 774 "$LOC"
  chown -R root:ansible "$LOC"
- chmod g+s "$LOC"
+ chmod g+rwxs "$LOC"
 
 # Print script runtime
  ENDTIME=$(date +%s)
