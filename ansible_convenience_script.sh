@@ -33,7 +33,7 @@ USERS=""
  ANSIBLE="ansible"
  C_CENT="sudo which initscripts"
  C_CENT8="hostname"
- C_CENT7="deltarpm python-pip"
+ C_CENT7="deltarpm"
  C_APT="locales sudo wget rsyslog systemd systemd-cron sudo iproute2"
  C_UBU18="apt-utils"
  C_UBU16="python-software-properties libssl-dev"
@@ -250,7 +250,6 @@ USERS=""
         yum -y install $C_CENT $C_CENT8 $PY3 $GIT_PKG
         # Install pip
         wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
-        yum clean all
         # If container, install Systemd
         if [ "$INODE_NUM" -gt '2' ]; then
           printf "\nInstalling SystemD\n"
@@ -260,6 +259,7 @@ USERS=""
         pip3 install $ANSIBLE
         # Disable requiretty
         sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/' /etc/sudoers
+        yum clean all
        break;;
        7)
         yum makecache fast
@@ -267,7 +267,6 @@ USERS=""
         yum -y install $C_CENT $C_CENT7 $GIT_PKG $PY3
         # Install pip
         wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
-        yum clean all
         # If container, install Systemd
         if [ "$INODE_NUM" -gt '2' ]; then
         printf "\nInstalling SystemD\n"
@@ -277,6 +276,7 @@ USERS=""
         pip3 install ansible
         # Disable requiretty
         sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/' /etc/sudoers
+        yum clean all
        break;;
       esac
      done
