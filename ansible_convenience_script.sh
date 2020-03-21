@@ -5,16 +5,16 @@ set -u # exit if a referenced variable is not declared
 STARTTIME=$(date +%s) # start function for script runtime
 
 # Set this to the URL of your custom ansible.cfg file, e.g.
-# CFG="https://raw.githubusercontent.com/ansible/ansible/devel/examples/ansible.cfg"
+# "https://raw.githubusercontent.com/ansible/ansible/devel/examples/ansible.cfg"
 CFG=""
 # Space seperated list of git roles, e.g.
-# GIT="https://github.com/geerlingguy/ansible-role-java.git https://github.com/geerlingguy/ansible-role-nodejs.git"
+# "https://github.com/geerlingguy/ansible-role-java.git https://github.com/geerlingguy/ansible-role-nodejs.git"
 GIT=""
 # Space seperated list of ansible-galaxy roles, e.g.
-# GALAXY="geerlingguy.ntp geerlingguy.nginx"
+# "geerlingguy.ntp geerlingguy.nginx"
 GALAXY=""
 # Space seperated list of users to add to the 'ansible' group, e.g.
-# USERS="alice bob charlie diane"
+# "alice bob charlie diane"
 USERS=""
 
 # Ansible files and folders
@@ -40,7 +40,8 @@ USERS=""
 
 # Install systemd function - Required to run Ansible against localhost in containers
  SYSD () { 
-  (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i = systemd-tmpfiles-setup.service ] || rm -f $i; done);
+  (cd /lib/systemd/system/sysinit.target.wants/; \
+  for i in *; do [ $i = systemd-tmpfiles-setup.service ] || rm -f $i; done);
   rm -f /lib/systemd/system/multi-user.target.wants/*;
   rm -f /etc/systemd/system/*.wants/*;
   rm -f /lib/systemd/system/local-fs.target.wants/*;
@@ -63,41 +64,14 @@ USERS=""
   printf "\n  -P,         Force package manager installation"
   printf "\n  -u,         Creates, or adds an existing user to the group 'ansible'"
   printf "\n"
-  printf "\nTo specify multiple users or roles, surround the string in quotes, like so:\n -u \"user1 user2 user3\" \nand\n -G \"owner.role owner.role2\""
-  printf "\n\n-P and -p overwrite eachother, using both uses the latter specified, like so:\n -Pp uses pip\nwhile\n -pP uses the package manager"
+  printf "\nTo specify multiple users or roles, surround the string in quotes"
+  printf " like so:\n"
+  printf "Users:  -u \"user1 user2 user3\" \n"
+  printf "Galaxy: -G \"owner.role owner.role2\"\n"
+  printf "Git:    -g \"https://github.com/user/role.git https://github.com/someguy/role2.git\""
   printf "\n\n"
   exit 0
  }
-
-# Exit if not run as root
- if [ "$(whoami)" != 'root' ]; then
-  printf "\nThis script must be run with sudo or as root\n"
-  exit 1
- fi
-
-# Check for distribution
- OS="$(sed -n '/^ID=/p' /etc/*release | sed 's/ID=//g;s/"//g')"
-# Check for distribution version
- VER="$(sed -n '/VERSION_ID=/p' /etc/*release | sed 's/VERSION_ID=//g;s/"//g')"
-
-# Check if running in container
- INODE_NUM=$(stat / | awk '/Inode/ {print $4}')
- if [ "$INODE_NUM" -gt '2' ]; then
-  PIP=true
-  CONTAINER="container" # used for script output
-  INSTALLATION="pip"
- else
-  PIP=""
-  CONTAINER="" # used for script output
-  INSTALLATION="package manager"
- fi
-
- # Check if git should be installed
- if [ -z "$GIT" ]; then
-  GIT_PKG="git"
- else
-  GIT_PKG=""
- fi
 
 # Options
  while getopts 'c:g:G:hHl:pPu:' option; do
@@ -115,6 +89,19 @@ USERS=""
   esac
  done
 
+# Exit if not run as root
+ [ "$(whoami)" = 'root' ] \
+ || printf "\nThis script must be run with elevated privleges!\n\n" \
+ || exit 1
+
+# Check if running in container || used mainly for CI processes
+# Use flag -x to force normal install in containers, which is useful for testing
+INODE_NUM=$(stat / | awk '/Inode/ {print $4}')
+[ "$INODE_NUM" -gt '2' ] && PIP="true" || PIP=""
+
+ # Check if git should be installed
+ [ -z "$GIT" ] && GIT_PKG="git" || GIT_PKG=""
+
 # Check which OS script is being run on. Exits if it's not supported
  while :; do
   case "$OS" in
@@ -122,7 +109,8 @@ USERS=""
     while :; do
      case "$VER" in
       18.*|16.*|8|7)
-       printf "\n%s %s %s detected\n\nconfigured for %s installation" "$OS" "$VER" "$CONTAINER" "$INSTALLATION"
+       printf "\n%s %s %s detected\n\nconfigured for %s installation" \
+       "$OS" "$VER" "$CONTAINER" "$INSTALLATION"
       break;;
      esac
     done
@@ -211,27 +199,36 @@ USERS=""
       case "$VER" in
        18.*)
         # Prepare OS for Ansible install
-        apt-get -y --no-install-recommends install $PKGS $APT $C_APT $C_UBU18 $GIT_PKG $PY3
+        apt-get -y --no-install-recommends install \
+        $PKGS $APT $C_APT $C_UBU18 $GIT_PKG $PY3
+
         locale-gen en_US.UTF-8
         sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
         # Install pip
         wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
         # Install Ansible
-        pip3 install --disable-pip-version-check --upgrade --force-reinstall $ANSIBLE
+        pip3 install --disable-pip-version-check \
+        --upgrade \
+        --force-reinstall $ANSIBLE
         # Cleanup
-        rm -Rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man /root/.cache/pip/
+        rm -Rf /var/lib/apt/lists/* \
+        /usr/share/doc /usr/share/man \
+        /root/.cache/pip/
+
         find / -name '*.pyc' -delete
         find / -name '*__pycache__*' -delete
        break;;
        16.*)
         # Prepare OS for Ansible install
-        apt-get -y install $PKGS $APT $C_APT $C_UBU16 $GIT_PKG $PY3 #$PY3
+        apt-get -y install $PKGS $APT $C_APT $C_UBU16 $GIT_PKG $PY3
         locale-gen en_US.UTF-8
         sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
         # Install pip
         wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
         # Install Ansible
-        pip3 install --disable-pip-version-check --upgrade --force-reinstall $ANSIBLE
+        pip3 install --disable-pip-version-check \
+        --upgrade \
+        --force-reinstall $ANSIBLE
         # Cleanup
         rm -Rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man
         find / -name '*.pyc' -delete
@@ -251,10 +248,7 @@ USERS=""
         # Install pip
         wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
         # If container, install Systemd
-        if [ "$INODE_NUM" -gt '2' ]; then
-          printf "\nInstalling SystemD\n"
-          SYSD
-        fi
+        [ "$INODE_NUM" -gt '2' ] && printf "\nInstalling SystemD\n" && SYSD
         # Install Ansible
         pip3 install $ANSIBLE
         # Disable requiretty
@@ -268,10 +262,7 @@ USERS=""
         # Install pip
         wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
         # If container, install Systemd
-        if [ "$INODE_NUM" -gt '2' ]; then
-        printf "\nInstalling SystemD\n"
-        SYSD
-        fi
+        [ "$INODE_NUM" -gt '2' ] && printf "\nInstalling SystemD\n" && SYSD
         # Install Ansible
         pip3 install ansible
         # Disable requiretty
@@ -300,34 +291,30 @@ USERS=""
  done
 
 # If the host is a container, modify ansible to run against localhost
- if [ "$PIP" = true ] && [ "$INODE_NUM" -gt '2' ] ; then
-   printf "\nAdding localhost entry to Ansible hosts file\n"
-   printf "[local]\nlocalhost ansible_connection=local" > /etc/ansible/hosts
- fi
+ [ "$PIP" = true ] && [ "$INODE_NUM" -gt '2' ] \
+ && printf "\nAdding localhost entry to Ansible hosts file\n" \
+ && printf "[local]\nlocalhost ansible_connection=local" > /etc/ansible/hosts
 
 # Make sure ansible.cfg exists under /etc/ansible
- if [ -z "$CFG" ]
-  then
-   printf "\nNo ansible.cfg specified, continuing...\n"
-  else
-   printf "\nBacking up current ansible.cfg\n"
-   BACKUP=$(date '+%Y_%m_%d_%H_%M_%S')
-   cp "$LOC"/ansible.cfg "$LOC"/ansible.cfg_"$BACKUP".bak
-   printf "\nDownloading specified ansible.cfg\n"
-   curl "$CFG" -o "$LOC"/ansible.cfg > /dev/null 2>&1
- fi
+ [ -z "$CFG" ] \
+ && printf "\nNo ansible.cfg specified, continuing...\n" \
+ || printf "\nBacking up current ansible.cfg\n" \
+ || BACKUP=$(date '+%Y_%m_%d_%H_%M_%S') \
+ || cp "$LOC"/ansible.cfg "$LOC"/ansible.cfg_"$BACKUP".bak \
+ || printf "\nDownloading specified ansible.cfg\n" \
+ || curl "$CFG" -o "$LOC"/ansible.cfg > /dev/null 2>&1 \
 
 # Download Ansible Galaxy roles if specified
- if [ -z "$GALAXY" ];
-  then
-   printf "\nNo galaxy roles set, continuing...\n"
-  else
-    printf "\nDownloading the following roles to %s/roles\n" "$LOC"
-    for galaxy_role in $GALAXY; do
-     ansible-galaxy install --roles-path "$LOC"/roles "$galaxy_role" > /dev/null 2>&1
-     printf "\n - %s" "$galaxy_role"
-    done
-    printf "\n"
+ if [ -z "$GALAXY" ]; then
+  printf "\nNo galaxy roles set, continuing...\n"
+ else
+  printf "\nDownloading the following roles to %s/roles\n" "$LOC"
+   for galaxy_role in $GALAXY; do
+    ansible-galaxy install --roles-path \
+    "$LOC"/roles "$galaxy_role" > /dev/null 2>&1
+    printf "\n - %s" "$galaxy_role"
+   done
+  printf "\n"
  fi
 
 # Download Ansible roles with git if specified
@@ -354,19 +341,16 @@ USERS=""
  if [ -z "$USERS" ]; then
   printf "\nNo users specified, continuing..."
  else
-  for USER in $USERS;
-   do
-    if ! grep -q "$USER" /etc/passwd; then
-     useradd "$USER" > /dev/null 2>&1
-     usermod -aG ansible "$USER"
-     printf "\n - %s created" "$USER"
-    else
-     usermod -aG ansible "$USER"
-    fi
-   done
+  for USER in $USERS; do
+    [ ! grep -q "$USER" /etc/passwd ] \
+     && useradd "$USER" > /dev/null 2>&1 \
+     && usermod -aG ansible "$USER" \
+     && printf "\n - %s created" "$USER" \
+     || usermod -aG ansible "$USER"
+  done
  fi
 
-# Set the correct Read Write Execute rights on /etc/ansible
+# Set the correct Read Write Execute permissions on /etc/ansible
  printf "\n\nSetting Ansible permissions on %s\n" "$LOC"
  chmod -R 774 "$LOC"
  chown -R root:ansible "$LOC"
@@ -381,8 +365,5 @@ USERS=""
  printf "\nAnsible version %s is installed\n" "$ANSI_VER"
 
 # Exit message on successfull run
- if [ -z "$GALAXY" ] && [ -z "$GIT" ]; then
-  printf "\nDownload some roles to get started\n\n"
- else
-  printf "\nEnjoy\n\n"
- fi
+ [ -z "$GALAXY" ] && [ -z "$GIT" ] \
+ && printf "\nDownload some roles to get started\n\n" || printf "\nEnjoy\n\n"
