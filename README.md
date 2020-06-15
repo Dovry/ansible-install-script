@@ -6,7 +6,7 @@
 
 ### Now supports pip installation and containers
 
-### Tested and works
+### Automated tests
 
 #### [Ubuntu 18.04](https://github.com/dovry/docker_ubuntu18_ansible)
 
