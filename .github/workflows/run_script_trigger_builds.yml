@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - ubuntu20
   pull_request:
     branches:
       - master
