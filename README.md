@@ -4,13 +4,16 @@
 
 ## Install Ansible with a shell script
 
-### Now supports pip installation and containers
+### Now supports Ubuntu 20.04
 
 ### Automated tests
 
+#### [Ubuntu 20.04](https://github.com/dovry/docker_ubuntu20_ansible)
+![Build Status](https://github.com/dovry/docker_ubuntu20_ansible/workflows/Basic%20build%20and%20push%20to%20Docker%20hub/badge.svg)
+
 #### [Ubuntu 18.04](https://github.com/dovry/docker_ubuntu18_ansible)
 
-![Build Status](https://github.com/dovry/docker_ubuntu18_ansible/workflows/Basic%20build%20and%20push%20to%20Docker%20hub/badge.svg) 
+![Build Status](https://github.com/dovry/docker_ubuntu18_ansible/workflows/Basic%20build%20and%20push%20to%20Docker%20hub/badge.svg)
 
 ![Docker Pulls](https://img.shields.io/docker/pulls/dovry/docker_ubuntu18_ansible)
  
