@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - ubuntu20
   pull_request:
     branches:
       - master
@@ -16,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        container: ["ubuntu:16.04", "ubuntu:18.04", "ubuntu.20.04", "centos:7", "centos:8"]
+        container: ["ubuntu:16.04", "ubuntu:18.04", "ubuntu:20.04", "centos:7", "centos:8"]
     steps:
     - uses: actions/checkout@v1
 
@@ -32,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        container: ["ubuntu:16.04", "ubuntu:18.04", "ubuntu.20.04", "centos:7", "centos:8"]
+        container: ["ubuntu:16.04", "ubuntu:18.04", "ubuntu:20.04", "centos:7", "centos:8"]
     steps:
     - uses: actions/checkout@v1
 
