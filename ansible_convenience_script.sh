@@ -4,16 +4,16 @@ set -e # exit if a command fails
 set -u # exit if a referenced variable is not declared
 STARTTIME=$(date +%s) # start function for script runtime
 
-# Set this to the URL of your custom ansible.cfg file, e.g.
+# Set this to the URL of your custom ansible.cfg file
 # CFG="https://raw.githubusercontent.com/ansible/ansible/devel/examples/ansible.cfg"
 CFG=""
-# Space seperated list of git roles, e.g.
+# Space seperated list of git roles
 # GIT="https://github.com/geerlingguy/ansible-role-java.git https://github.com/geerlingguy/ansible-role-nodejs.git"
 GIT=""
-# Space seperated list of ansible-galaxy roles, e.g.
+# Space seperated list of ansible-galaxy roles
 # GALAXY="geerlingguy.ntp geerlingguy.nginx"
 GALAXY=""
-# Space seperated list of users to add to the 'ansible' group, e.g.
+# Space seperated list of users to add to the 'ansible' group
 # USERS="alice bob charlie diane"
 USERS=""
 
