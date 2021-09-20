@@ -122,7 +122,7 @@ USERS=""
     while :; do
      case "$VER" in
       20.*|18.*|16.*|8|7)
-       printf "\n%s %s %s detected\n\nconfigured for %s installation" "$OS" "$VER" "$CONTAINER" "$INSTALLATION"
+       printf "\n%s %s %s detected\n\nconfigured for %s installation\n" "$OS" "$VER" "$CONTAINER" "$INSTALLATION"
       break;;
      esac
     done
