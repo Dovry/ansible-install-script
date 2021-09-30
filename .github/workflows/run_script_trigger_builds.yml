@@ -11,7 +11,7 @@ on:
     branches:
       - master
   schedule:
-    - cron:  "0 0 * * MON,THU"
+    - cron:  "0 0 * * MON"
 
 jobs:
   pip:
