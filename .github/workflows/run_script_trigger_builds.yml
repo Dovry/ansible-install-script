@@ -48,7 +48,8 @@ jobs:
         docker exec pip-container /bin/bash -v /home/script/ansible_convenience_script.sh -P
  
   trigger_docker_repo_dispatch:
-    needs: [pip, pkg]
+   # needs: [pip, pkg]
+   needs: pkg
     runs-on: ubuntu-latest
     strategy:
       matrix:
