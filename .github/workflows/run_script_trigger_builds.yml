@@ -49,7 +49,7 @@ jobs:
  
   trigger_docker_repo_dispatch:
    # needs: [pip, pkg]
-   needs: pkg
+    needs: pkg
     runs-on: ubuntu-latest
     strategy:
       matrix:
