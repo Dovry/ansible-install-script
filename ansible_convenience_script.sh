@@ -39,8 +39,8 @@ USERS=""
  C_UBU16="python-software-properties libssl-dev"
 
 # Install systemd function - Required to run Ansible against localhost in containers
- SYSD () { 
-  (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i = systemd-tmpfiles-setup.service ] || rm -f $i; done);
+ SYSD () {
+  (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ "$i" = systemd-tmpfiles-setup.service ] || rm -f "$i"; done);
   rm -f /lib/systemd/system/multi-user.target.wants/*;
   rm -f /etc/systemd/system/*.wants/*;
   rm -f /lib/systemd/system/local-fs.target.wants/*;
@@ -70,7 +70,7 @@ USERS=""
  }
 
 # Exit if not run as root
- if [ "$(whoami)" != 'root' ]; then
+ if [ "$(id -u)" != 0 ]; then
   printf "\nThis script must be run with sudo or as root\n"
   exit 1
  fi
@@ -107,7 +107,7 @@ USERS=""
    G) GALAXY="$OPTARG" ;;                            # galaxy roles to download
    h) HELP ;;                                        # shows the help menu
    H) HELP ;;                                        # shows the help menu
-   l) LOC="$LOC" ;;                                  # ansible files location
+   l) LOC="{$LOC:=/etc/ansible}" ;;                                  # ansible files location
    p) PIP=true; INSTALLATION="pip" ;;                # pip install
    P) PIP=false; INSTALLATION="package manager" ;;   # force package manager install (defaults to pip in container)
    u) USERS="$OPTARG" ;;                             # users to add to ansible group
@@ -140,13 +140,13 @@ USERS=""
    ubuntu)
     printf "\nupdating apt cache\n"
     # disable all interactive prompts
-    export DEBIAN_FRONTEND=noninteractive 
+    export DEBIAN_FRONTEND=noninteractive
     export DEBCONF_NONINTERACTIVE_SEEN=true
-    apt-get update 
+    apt-get update
    break;;
    centos)
      printf "\nInstalling epel-release\n"
-     yum install -y epel-release 
+     yum install -y epel-release
    break;;
   esac
  done
@@ -157,7 +157,7 @@ USERS=""
   while :; do
    case "$OS" in
     ubuntu)
-    apt-get install -y $APT $PKGS $GIT_PKG
+    apt-get install -y "$APT $PKGS $GIT_PKG"
      while :; do
        case "$VER" in
          20.*)
@@ -168,7 +168,7 @@ USERS=""
           printf "\nAdding Ansible PPA\n"
           add-apt-repository -y ppa:ansible/ansible
           printf "\nUpdating apt cache\n"
-          apt-get update 
+          apt-get update
         break;;
        esac
      done
@@ -177,10 +177,10 @@ USERS=""
      while :; do
       case "$VER" in
        8)
-        dnf install -y $YUM $DNF $PKGS $GIT_PKG
+        dnf install -y "$YUM $DNF $PKGS $GIT_PKG"
        break;;
        7)
-        yum install -y $YUM $PKGS $GIT_PKG
+        yum install -y "$YUM $PKGS $GIT_PKG"
        break;;
       esac
      done
@@ -192,16 +192,16 @@ USERS=""
   while :; do
    case "$OS" in
     ubuntu)
-     apt-get install --reinstall -y $ANSIBLE 
+     apt-get install --reinstall -y $ANSIBLE
     break;;
     centos)
      while :; do
       case "$VER" in
        8)
-        yum install -y $ANSIBLE 
+        yum install -y $ANSIBLE
        break;;
        7)
-        yum install -y $ANSIBLE 
+        yum install -y $ANSIBLE
        break;;
       esac
      done
@@ -220,9 +220,9 @@ USERS=""
       case "$VER" in
        20.*|18.*)
         # Prepare OS for Ansible install
-        apt-get -y --no-install-recommends install $PKGS $APT $C_APT $C_UBU18 $GIT_PKG $PY3
+        apt-get -y --no-install-recommends install "$PKGS $APT $C_APT $C_UBU18 $GIT_PKG $PY3"
         locale-gen en_US.UTF-8
-        sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
+          #sed -i "s/^\($ModLoad imklog\)/#\1/" /etc/rsyslog.conf
         # Install pip
         wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
         # Install Ansible
@@ -234,9 +234,9 @@ USERS=""
        break;;
        16.*)
         # Prepare OS for Ansible install
-        apt-get -y install $PKGS $APT $C_APT $C_UBU16 $GIT_PKG $PY3
+        apt-get -y install "$PKGS $APT $C_APT $C_UBU16 $GIT_PKG $PY3"
         locale-gen en_US.UTF-8
-        sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
+          #sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
         # Install pip
         wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
         # Install Ansible
@@ -256,7 +256,7 @@ USERS=""
        8)
         yum makecache --timer
         yum -y update
-        yum -y install $C_CENT $C_CENT8 $PY3 $GIT_PKG
+        yum -y install "$C_CENT $C_CENT8 $PY3 $GIT_PKG"
         # Install pip
         wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
         # If container, install Systemd
@@ -273,7 +273,7 @@ USERS=""
        7)
         yum makecache fast
         yum -y update
-        yum -y install $C_CENT $C_CENT7 $GIT_PKG $PY3
+        yum -y install "$C_CENT $C_CENT7 $GIT_PKG $PY3"
         # Install pip
         wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
         # If container, install Systemd
@@ -323,7 +323,7 @@ USERS=""
    BACKUP=$(date '+%Y_%m_%d_%H_%M_%S')
    cp "$LOC"/ansible.cfg "$LOC"/ansible.cfg_"$BACKUP".bak
    printf "\nDownloading specified ansible.cfg\n"
-   curl "$CFG" -o "$LOC"/ansible.cfg 
+   curl "$CFG" -o "$LOC"/ansible.cfg
  fi
 
 # Download Ansible Galaxy roles if specified
@@ -333,7 +333,7 @@ USERS=""
   else
     printf "\nDownloading the following roles to %s/roles\n" "$LOC"
     for galaxy_role in $GALAXY; do
-     ansible-galaxy install --roles-path "$LOC"/roles "$galaxy_role" 
+     ansible-galaxy install --roles-path "$LOC"/roles "$galaxy_role"
      printf "\n - %s" "$galaxy_role"
     done
     printf "\n"
@@ -346,12 +346,12 @@ USERS=""
   printf "\nDownloading the following roles to %s/roles\n" "$LOC"
   cd "$LOC"/roles
    for git_role in $GIT; do
-    git clone "$git_role" || true 
+    git clone "$git_role" || true
    done
  fi
 
 # Make sure group 'ansible' exists
- if cut -d: -f1 /etc/group | grep ansible 
+ if cut -d: -f1 /etc/group | grep ansible
   then
    printf "\nAnsible group exists, continuing..."
   else
@@ -366,7 +366,7 @@ USERS=""
   for USER in $USERS;
    do
     if ! grep -q "$USER" /etc/passwd; then
-     useradd "$USER" 
+     useradd "$USER"
      usermod -aG ansible "$USER"
      printf "\n - %s created" "$USER"
     else
