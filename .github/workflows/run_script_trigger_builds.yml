@@ -28,7 +28,7 @@ jobs:
     - name: run pip container
       run: |
         docker run -d -it --name pip-container -v "$(pwd)":/home/script "${{ matrix.container }}"
-        docker exec pkg-container /bin/bash -v /home/script/ansible_convenience_script.sh -p
+        docker exec pip-container /bin/bash -v /home/script/ansible_convenience_script.sh -p
 
   pkg:
     runs-on: ubuntu-latest
@@ -44,7 +44,7 @@ jobs:
     - name: run package manager container
       run: |
         docker run -d -it --name pkg-container -v "$(pwd)":/home/script "${{ matrix.container }}"
-        docker exec pip-container /bin/bash -v /home/script/ansible_convenience_script.sh -P
+        docker exec pkg-container /bin/bash -v /home/script/ansible_convenience_script.sh -P
  
   trigger_docker_repo_dispatch:
    # needs: [pip, pkg]
