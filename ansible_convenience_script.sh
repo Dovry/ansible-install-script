@@ -157,7 +157,7 @@ USERS=""
   while :; do
    case "$OS" in
     ubuntu)
-    apt-get install -y "$APT $PKGS $GIT_PKG"
+    apt-get install -y $APT $PKGS $GIT_PKG
      while :; do
        case "$VER" in
          20.*)
@@ -177,10 +177,10 @@ USERS=""
      while :; do
       case "$VER" in
        8)
-        dnf install -y "$YUM $DNF $PKGS $GIT_PKG"
+        dnf install -y $YUM $DNF $PKGS $GIT_PKG
        break;;
        7)
-        yum install -y "$YUM $PKGS $GIT_PKG"
+        yum install -y $YUM $PKGS $GIT_PKG
        break;;
       esac
      done
@@ -220,7 +220,7 @@ USERS=""
       case "$VER" in
        20.*|18.*)
         # Prepare OS for Ansible install
-        apt-get -y --no-install-recommends install "$PKGS $APT $C_APT $C_UBU18 $GIT_PKG $PY3"
+        apt-get -y --no-install-recommends install $PKGS $APT $C_APT $C_UBU18 $GIT_PKG $PY3
         locale-gen en_US.UTF-8
           #sed -i "s/^\($ModLoad imklog\)/#\1/" /etc/rsyslog.conf
         # Install pip
@@ -234,7 +234,7 @@ USERS=""
        break;;
        16.*)
         # Prepare OS for Ansible install
-        apt-get -y install "$PKGS $APT $C_APT $C_UBU16 $GIT_PKG $PY3"
+        apt-get -y install $PKGS $APT $C_APT $C_UBU16 $GIT_PKG $PY3
         locale-gen en_US.UTF-8
           #sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
         # Install pip
@@ -256,7 +256,7 @@ USERS=""
        8)
         yum makecache --timer
         yum -y update
-        yum -y install "$C_CENT $C_CENT8 $PY3 $GIT_PKG"
+        yum -y install $C_CENT $C_CENT8 $PY3 $GIT_PKG
         # Install pip
         wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
         # If container, install Systemd
@@ -273,7 +273,7 @@ USERS=""
        7)
         yum makecache fast
         yum -y update
-        yum -y install "$C_CENT $C_CENT7 $GIT_PKG $PY3"
+        yum -y install $C_CENT $C_CENT7 $GIT_PKG $PY3
         # Install pip
         wget -O - https://bootstrap.pypa.io/get-pip.py | python3 -
         # If container, install Systemd
