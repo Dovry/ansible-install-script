@@ -2,7 +2,7 @@
 
 ![Build Status](https://github.com/dovry/ansible-install-script/workflows/CI/badge.svg)
 
-## Install Ansible with a shell script
+## Automated ansible install script for multiple OS-es
 
 ### Now supports Ubuntu 20.04
 
